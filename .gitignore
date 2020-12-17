@@ -4,5 +4,5 @@
 !.gitignore
 !composer.json
 *.lock
-/nbproject/*/
+/nbproject/private/
 /vendor/
