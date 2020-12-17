@@ -32,12 +32,6 @@ class SlimErrorHandler extends ErrorHandler {
 
             $controller = $this->container->get(\App\Controllers\BaseController::class);
 
-            print_r($controller);
-
-
-            //$controller = new BaseController($this->container, $this->request, $response);
-
-
             $data = [
                 'title' => $this->container->get("settings")->get('app.title') . " Error",
                 'details' => $this->displayErrorDetails,
