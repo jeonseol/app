@@ -2,6 +2,8 @@
 
 // Configure defaults for the whole application.
 // Error reporting
+if (php_sapi_name() !== "cli") session_start();
+
 error_reporting(0);
 ini_set('display_errors', '0');
 

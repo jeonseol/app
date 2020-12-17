@@ -13,8 +13,6 @@ use Slim\{
 };
 use function Composer\Autoload\includeFile;
 
-if (php_sapi_name() !== "cli") session_start();
-
 if (file_exists(__DIR__ . '/middlewares.php')) require_once __DIR__ . '/middlewares.php';
 
 
