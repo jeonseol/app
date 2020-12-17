@@ -13,7 +13,7 @@ use Slim\{
 };
 use function Composer\Autoload\includeFile;
 
-if (file_exists(__DIR__ . '/middlewares.php')) require_once __DIR__ . '/middlewares.php';
+if (file_exists(dirname(__DIR__) . '/middlewares.php')) require_once dirname(__DIR__) . '/middlewares.php';
 
 
 
@@ -26,14 +26,22 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) us
         //some functions
         $twig->addExtension(new BaseUrl($request, $app->getBasePath()));
 
-        $twig->addExtension(new MicroTime());
 
         //global vars
-        if (file_exists(__DIR__) . '/twig.php') $data = require __DIR__ . '/twig.php';
+        if (file_exists(__DIR__) . '/twig/globals.php') $data = require __DIR__ . '/twig/globals.php';
         else $data = [];
 
         $twig->addExtension(new TwigGlobalVars($container, $data));
         $twig->addExtension(new Tests());
+
+        if (file_exists(__DIR__ . '/twig/extensions.php')) {
+            $extensions = require __DIR__ . '/twig/extensions.php';
+            if (is_array($extensions)) {
+                foreach ($extensions as $ext) {
+                    $twig->addExtension($ext);
+                }
+            }
+        }
 
         // slim/twig-view
         $view = new TwigMiddleware(

@@ -14,13 +14,13 @@ use Slim\{
 $containerBuilder = new ContainerBuilder();
 $containerBuilder->useAutowiring(true);
 $containerBuilder->useAnnotations(true);
-$containerBuilder->addDefinitions(__DIR__ . '/definitions.defaults.php');
+$containerBuilder->addDefinitions(__DIR__ . '/defaults/definitions.php');
 if (file_exists(__DIR__ . '/definitions.php')) $containerBuilder->addDefinitions(__DIR__ . '/definitions.php');
 $container = $containerBuilder->build();
 
 $app = $container->get(App::class);
 
-require_once __DIR__ . '/middlewares.defaults.php';
-require_once __DIR__ . '/routes.defaults.php';
+require_once __DIR__ . '/defaults/middlewares.php';
+require_once __DIR__ . '/defaults/routes.php';
 
 return $app;

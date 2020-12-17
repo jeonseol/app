@@ -13,7 +13,7 @@ return [
     //cli commands
     "commands" => [],
     "settings" => function() {
-        $settings = require __DIR__ . '/settings.php';
+        $settings = require dirname(__DIR__) . '/settings.php';
         return new Dot($settings);
     },
     App::class => function (ContainerInterface $container) {
