@@ -47,7 +47,7 @@
             "App\\": "src/"
         },
         "files": [
-            "config/app.php"
+            "config/config.php"
         ]
     },
     "autoload-dev": {},
