@@ -16,7 +16,7 @@ class CSRF extends AbstractExtension implements GlobalsInterface {
         $this->csrf = $csrf;
     }
 
-    public function getHTML() {
+    public function getHTML(): string {
         return '<input type="hidden" name="'
                 . $this->csrf->getTokenNameKey()
                 . '" value="'

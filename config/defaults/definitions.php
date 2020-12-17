@@ -2,10 +2,11 @@
 
 use Adbar\Dot;
 use Psr\{
-    Container\ContainerInterface, Http\Message\ResponseFactoryInterface
+    Container\ContainerInterface, Http\Message\ResponseFactoryInterface, Http\Message\ServerRequestInterface,
+    Http\Server\RequestHandlerInterface
 };
 use Slim\{
-    App, Factory\AppFactory, Interfaces\RouteParserInterface, Views\Twig
+    App, Csrf\Guard, Factory\AppFactory, Interfaces\RouteParserInterface, Views\Twig
 };
 use function DI\get;
 
@@ -32,8 +33,15 @@ return [
         return Twig::create($settings ['twig.paths'], $settings ['twig.options']);
     },
     "view" => get(Twig::class),
-    "csrf" => function(ContainerInterface $container) {
+    Guard::class => function (ContainerInterface $container) {
         $responseFactory = $container->get(App::class)->getResponseFactory();
-        return new Guard($responseFactory);
-    }
+        $guard = new Guard($responseFactory);
+
+        $guard->setFailureHandler(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+                    $request = $request->withAttribute("csrf_status", false);
+                    return $handler->handle($request);
+                });
+        return $guard;
+    },
+    "csrf" => get(Guard::class),
 ];
