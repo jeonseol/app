@@ -50,7 +50,7 @@ class CSRF extends AbstractExtension implements GlobalsInterface {
 
     public function getFunctions() {
         return [
-            new TwigFunction('csrf', [$this, 'getHTML'], ['is_safe' => ['html']])
+            new TwigFunction('csrfinput', [$this, 'getHTML'], ['is_safe' => ['html']])
         ];
     }
 
