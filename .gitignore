@@ -1,5 +1,6 @@
 .*
 !.ht*
+!.env.*
 !.gitignore
 !composer.json
 *.lock
