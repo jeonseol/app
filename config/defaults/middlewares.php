@@ -8,24 +8,26 @@ use Psr\Http\{
 };
 use Selective\BasePath\BasePathMiddleware;
 use Slim\{
-    Handlers\ErrorHandler, Http\ServerRequest, Interfaces\CallableResolverInterface, Middleware\ErrorMiddleware,
-    Middleware\RoutingMiddleware, Views\Twig, Views\TwigMiddleware
+    Http\ServerRequest, Interfaces\CallableResolverInterface, Interfaces\ErrorHandlerInterface, Middleware\ErrorMiddleware, Views\Twig,
+    Views\TwigMiddleware
 };
+
+$app->addBodyParsingMiddleware();
 
 if (file_exists(dirname(__DIR__) . '/middlewares.php')) require_once dirname(__DIR__) . '/middlewares.php';
 
 
 
-$app->add(new RoutingMiddleware($app->getRouteResolver(), $app->getRouteCollector()->getRouteParser()));
+//$app->add(new RoutingMiddleware($app->getRouteResolver(), $app->getRouteCollector()->getRouteParser()));
+$app->addRoutingMiddleware();
+
 //twig Extensions
 $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) use ($container, $app) {
 
     $twig = $container->get(Twig::class);
     if ($twig instanceof Twig) {
         //some functions
-        $twig->addExtension(new BaseUrl($request, $app->getBasePath()));
-
-
+        //$twig->addExtension(new BaseUrl($request, $app->getBasePath()));
         //global vars
         if (file_exists(dirname(__DIR__) . '/twig/globals.php')) $data = require dirname(__DIR__) . '/twig/globals.php';
         else $data = [];
@@ -74,7 +76,7 @@ $errorMiddleware = new ErrorMiddleware(
         $container->get("settings")->get('slim.logerrors'),
         $container->get("settings")->get('slim.logerrordetails')
 );
-$errorMiddleware->setDefaultErrorHandler($container->get(ErrorHandler::class));
+$errorMiddleware->setDefaultErrorHandler($container->get(ErrorHandlerInterface::class));
 $app->add($errorMiddleware);
 
 

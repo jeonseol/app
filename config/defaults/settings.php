@@ -16,18 +16,22 @@ ini_set('default_mimetype', '');
 // Settings
 $settings = [];
 
+$root = dirname(dirname(__DIR__));
+
+
+
 $settings['paths'] = [
-    'root' => dirname(__DIR__),
-    'bin' => dirname(__DIR__) . "/bin",
-    'config' => dirname(__DIR__) . "/config",
-    'docs' => dirname(__DIR__) . "/docs",
-    'logs' => dirname(__DIR__) . "/logs",
-    'public' => dirname(__DIR__) . "/public",
-    'resources' => dirname(__DIR__) . "/resources",
-    'src' => dirname(__DIR__) . "/src",
-    'templates' => dirname(__DIR__) . "/templates",
-    'tests' => dirname(__DIR__) . "/tests",
-    'tmp' => dirname(__DIR__) . "/tmp"
+    'root' => $root,
+    'bin' => $root . "/bin",
+    'config' => $root . "/config",
+    'docs' => $root . "/docs",
+    'logs' => $root . "/logs",
+    'public' => $root . "/public",
+    'resources' => $root . "/resources",
+    'src' => $root . "/src",
+    'templates' => $root . "/templates",
+    'tests' => $root . "/tests",
+    'tmp' => $root . "/tmp"
 ];
 
 

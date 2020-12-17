@@ -22,5 +22,6 @@ $app = $container->get(App::class);
 
 require_once __DIR__ . '/defaults/middlewares.php';
 require_once __DIR__ . '/defaults/routes.php';
+if (file_exists(__DIR__ . '/routes.php')) require_once __DIR_ . '/routes.php';
 
 return $app;

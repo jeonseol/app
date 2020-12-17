@@ -1,6 +1,7 @@
 <?php
 
-use Adbar\Dot;
+use Adbar\Dot,
+    App\Middlewares\SlimErrorHandler;
 use Monolog\{
     Handler\FilterHandler, Handler\StreamHandler, Logger, Processor\UidProcessor
 };
@@ -9,7 +10,8 @@ use Psr\{
     Http\Server\RequestHandlerInterface, Log\LoggerInterface
 };
 use Slim\{
-    App, Csrf\Guard, Factory\AppFactory, Handlers\ErrorHandler, Interfaces\RouteParserInterface, Views\Twig
+    App, Csrf\Guard, Factory\AppFactory, Interfaces\CallableResolverInterface, Interfaces\ErrorHandlerInterface,
+    Interfaces\RouteParserInterface, Views\Twig
 };
 use function DI\get;
 
@@ -30,9 +32,12 @@ return [
     RouteParserInterface::class => function (ContainerInterface $container) {
         return $container->get(App::class)->getRouteCollector()->getRouteParser();
     },
-    ErrorHandler::class => function(ContainerInterface $container) {
-        $app = $container->get(App::class);
-        return new ErrorHandler($app->getCallableResolver(), $app->getResponseFactory(), $container->get(LoggerInterface::class));
+    CallableResolverInterface::class => function (ContainerInterface $container) {
+        return $container->get(App::class)->getCallableResolver();
+    },
+    ErrorHandlerInterface::class => function(ContainerInterface $container) {
+
+        return new SlimErrorHandler($container->get(CallableResolverInterface::class), $container->get(ResponseFactoryInterface::class), $container->get(LoggerInterface::class), $container);
     },
     Twig::class => function (ContainerInterface $container) {
         $settings = $container->get('settings');
@@ -60,6 +65,6 @@ return [
             new StreamHandler($path . "/error.log", Logger::ERROR),
         ];
         $processor = new UidProcessor();
-        return new Logger('SlimApp', $handlers, [$processor]);
+        return new Logger($settings->get('app.title'), $handlers, [$processor]);
     },
 ];

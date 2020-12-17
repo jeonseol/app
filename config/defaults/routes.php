@@ -1,3 +1,19 @@
 <?php
 
-if (file_exists(dirname(__DIR__) . '/routes.php')) require_once dirname(__DIR__) . '/routes.php';
+use Slim\{
+    Http\Response, Http\ServerRequest as Request, Routing\RouteCollectorProxy
+};
+
+/*
+  $app->any('/', function(Request $request, Response $response) use ($container) {
+  print_r($this);
+  $controller = new HomeController($container, $request, $response);
+  return $controller->home();
+  })->setName("home"); */
+
+
+$app->any('/', function($request, $response) use ($container) {
+    print_r([$request, $response]);
+})->setName("home");
+
+
