@@ -41,7 +41,8 @@ $settings['slim'] = [
 
 $settings['twig'] = [
     'paths' => [
-        $settings['paths']['templates']
+        $settings['paths']['templates'],
+        $settings['paths']['src'] . '/Views'
     ],
     'options' => [
         'cache' => $settings['paths']['tmp'] . '/twig',

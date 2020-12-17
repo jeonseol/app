@@ -32,4 +32,8 @@ return [
         return Twig::create($settings ['twig.paths'], $settings ['twig.options']);
     },
     "view" => get(Twig::class),
+    "csrf" => function(ContainerInterface $container) {
+        $responseFactory = $container->get(App::class)->getResponseFactory();
+        return new Guard($responseFactory);
+    }
 ];

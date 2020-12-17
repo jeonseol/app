@@ -1,7 +1,7 @@
 <?php
 
 use App\Extensions\{
-    BaseUrl, MicroTime, Tests, TwigGlobalVars
+    BaseUrl, CSRF, Tests, TwigGlobalVars
 };
 use Psr\Http\{
     Message\ResponseFactoryInterface, Server\RequestHandlerInterface
@@ -11,7 +11,6 @@ use Slim\{
     Handlers\ErrorHandler, Http\ServerRequest, Interfaces\CallableResolverInterface, Middleware\ErrorMiddleware,
     Middleware\RoutingMiddleware, Views\Twig, Views\TwigMiddleware
 };
-use function Composer\Autoload\includeFile;
 
 if (file_exists(dirname(__DIR__) . '/middlewares.php')) require_once dirname(__DIR__) . '/middlewares.php';
 
@@ -33,6 +32,7 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) us
 
         $twig->addExtension(new TwigGlobalVars($container, $data));
         $twig->addExtension(new Tests());
+        $twig->addExtension($container->get(CSRF::class));
 
         if (file_exists(__DIR__ . '/twig/extensions.php')) {
             $extensions = require __DIR__ . '/twig/extensions.php';
@@ -43,7 +43,6 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) us
             }
         }
 
-        // slim/twig-view
         $view = new TwigMiddleware(
                 $twig,
                 $app->getRouteCollector()->getRouteParser(),
