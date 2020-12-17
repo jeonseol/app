@@ -93,6 +93,15 @@ class BaseController {
     }
 
     /**
+     * Renders Text
+     * @param string $contents
+     * @return ResponseInterface
+     */
+    public function renderText(string $contents): ResponseInterface {
+        return $this->render('default.twig', ['contents' => $contents]);
+    }
+
+    /**
      * Render the page using the rendering engine
      * @param ResponseInterface $response
      * @param string $page
