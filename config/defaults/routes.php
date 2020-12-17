@@ -13,7 +13,9 @@ use Slim\{
 
 
 $app->any('/', function(Request $request, Response $response) use ($container) {
-
+    $controller = new App\Controllers\BaseController($container, $request, $response);
+    $controller->title = "Your Slim 4 Project";
+    return $controller->renderText('Welcome to your Slim Project');
 })->setName("home");
 
 

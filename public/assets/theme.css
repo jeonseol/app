@@ -19,7 +19,8 @@ body > header.fixed-top + .separator{margin-bottom: 8em;}
 body > .container, body > header .container{max-width: 1300px;}
 body > .container{min-height: 200px;}
 body >  .container +  .container{margin-top: 1em;}
-body > div.container:last-of-type{padding-bottom: 8em;}
+body > .container:last-of-type{padding-bottom: 8em;}
+.alert p{font-size:1.5em;}
 .dropdown-menu.pull-right {
     -webkit-transform-origin: top right;-moz-transform-origin: top right;
     -ms-transform-origin: top right;transform-origin: top right;
