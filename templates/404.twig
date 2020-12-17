@@ -1,0 +1,22 @@
+{% extends isAjaxRequest != true ? "base.twig" : "ajax.twig" %}
+
+{% block title %}
+    {{ apptitle }} - Page not found
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="alert alert-secondary" role="alert">
+            <h3 class="alert-heading">{{ apptitle }}</h3><hr>
+               
+                <p style="font-size: 1.5rem;" class="mt-3 text-center">
+                    Sorry, an error has occured,<br>
+                    Requested page not found!
+                </p>
+                {% if ServerSignature %}
+                    <hr>
+                    <p class="text-right mb-0">{{ ServerSignature }}</p>
+                {% endif %}
+            </div>
+    </div>
+{% endblock %}

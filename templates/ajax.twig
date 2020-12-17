@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}{{ apptitle }}{% if title %} - {{ title }}{% endif %}{% endblock %}</title>  
+    </head>
+    <body>
+        <main>
+            {% block body %}{% endblock %}
+            {% block scripts %}{% endblock %}
+        </main>
+    </body>
+</html>
