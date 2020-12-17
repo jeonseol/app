@@ -12,8 +12,8 @@ use Slim\{
   })->setName("home"); */
 
 
-$app->any('/', function($request, $response) use ($container) {
-    print_r([$request, $response]);
+$app->any('/', function(Request $request, Response $response) use ($container) {
+
 })->setName("home");
 
 

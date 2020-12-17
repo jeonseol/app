@@ -1,3 +1,8 @@
+html, body{
+    font-family: "Noto Sans", FreeSans, Arimo, "Droid Sans", Arial, Helvetica, sans-serif;
+    font-size: 1em;
+}
+
 .bg-blue{background-color: #00619D !important;}
 .noselect{-webkit-touch-callout: none;-webkit-user-select: none;-moz-user-select: none;user-select: none;}
 .disabled, [disabled]{pointer-events: none;}
@@ -8,11 +13,12 @@
 .sticky.left{left: 0;}
 .separator{height: 0; margin-bottom: 4em;}
 .pagination .active{pointer-events: none;}
+/* Bootstrap overrides */
 body > header {min-height: 4em;}
 body > header.fixed-top + .separator{margin-bottom: 8em;}
 body > .container, body > header .container{max-width: 1300px;}
-body > div.container{min-height: 200px;}
-body >  div.container +  div.container{margin-top: 1em;}
+body > .container{min-height: 200px;}
+body >  .container +  .container{margin-top: 1em;}
 body > div.container:last-of-type{padding-bottom: 8em;}
 .dropdown-menu.pull-right {
     -webkit-transform-origin: top right;-moz-transform-origin: top right;
@@ -25,9 +31,7 @@ body > div.container:last-of-type{padding-bottom: 8em;}
     [data-overflow] .container + .footer{display: block;}
 }
 
-/**
- * Alertify Custom
- */
+/* Alertify Custom */
 .alertify .ajs-footer{padding: 5px 15px;}
 .ajs-footer .ajs-buttons{min-height: 50px; height: 50px;}
 .alertify-notifier, .alertify{font-size: 1rem;}
@@ -35,9 +39,7 @@ body > div.container:last-of-type{padding-bottom: 8em;}
 .alertify-notifier.ajs-top{top: 4rem;}
 .alertify-notifier.ajs-bottom{bottom: 4rem;}
 
-/**
- * Loader
- */
+/* Ajax Loader */
 .loader {
   height: 2px; width: 100%;
   position: relative; overflow: hidden;

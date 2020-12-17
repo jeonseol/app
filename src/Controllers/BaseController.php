@@ -2,10 +2,10 @@
 
 namespace App\Controllers;
 
-use NGSOFT\Tools\Objects\stdObject;
+use JsonException,
+    NGSOFT\Tools\Objects\stdObject;
 use Psr\{
-    Container\ContainerInterface, Http\Message\ResponseFactoryInterface, Http\Message\ResponseInterface,
-    Http\Message\ServerRequestInterface
+    Container\ContainerInterface, Http\Message\ResponseInterface, Http\Message\ServerRequestInterface
 };
 use Slim\{
     App, Factory\ServerRequestCreatorFactory, Http\Response, Http\ServerRequest
@@ -22,10 +22,13 @@ class BaseController {
     /** @var App */
     protected $app;
 
+    /** @var RespinseFactoryInterface */
+    protected $responseFactory;
+
     /** @var ServerRequestInterface */
     protected $request;
 
-    /** @var ResponseFactoryInterface */
+    /** @var ResponseInterface */
     protected $response;
 
     /** @var stdObject */
@@ -58,13 +61,14 @@ class BaseController {
 
         $this->container = $container;
         $this->app = $container->get(App::class);
+        $this->responseFactory = $this->app->getResponseFactory();
 
         if (!$request) {
             $serverRequestCreator = ServerRequestCreatorFactory::create();
             $request = $serverRequestCreator->createServerRequestFromGlobals();
         }
 
-        if (!$response) $response = $this->app->getResponseFactory()->createResponse();
+        if (!$response) $response = $this->createResponse();
         $this->request = $request;
         $this->response = $response;
         $this->data = stdObject::create();
@@ -93,11 +97,44 @@ class BaseController {
      * @param ResponseInterface $response
      * @param string $page
      * @param array $data
-     * @return string
+     * @return ResponseInterface
      */
-    public function render(string $page, array $data = []) {
+    public function render(string $page, array $data = []): ResponseInterface {
         $data = array_replace(self::$globals, $this->data->toArray(), $data);
         return $this->get("view")->render($this->response, $page, $data);
+    }
+
+    /**
+     * Write JSON to the response body.
+     *
+     * This method prepares the response object to return an HTTP JSON
+     * response to the client.
+     *
+     * @param ResponseInterface $response The response
+     * @param mixed $data The data
+     * @param int $options Json encoding options
+     *
+     * @throws JsonException
+     *
+     * @return ResponseInterface The response
+     */
+    public function renderJson(
+            ResponseInterface $response,
+            $data = null,
+            int $options = 0
+    ): ResponseInterface {
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write((string) json_encode($data, JSON_THROW_ON_ERROR | $options));
+        return $response;
+    }
+
+    /**
+     * Create a new response.
+     *
+     * @return ResponseInterface The response
+     */
+    public function createResponse(): ResponseInterface {
+        return $this->responseFactory->createResponse()->withHeader('Content-Type', 'text/html; charset=utf-8');
     }
 
     /**
