@@ -1,7 +1,7 @@
 .*
 !.ht*
 !.env.*
-!.gitignore
+!.git*
 !composer.json
 *.lock
 /nbproject/private/
