@@ -15,32 +15,11 @@ use function Composer\Autoload\includeFile;
 
 if (php_sapi_name() !== "cli") session_start();
 
-$app->add(new RoutingMiddleware($app->getRouteResolver(), $app->getRouteCollector()->getRouteParser()));
-
-$app->add(new BasePathMiddleware($app));
-
 if (file_exists(__DIR__ . '/middlewares.php')) require_once __DIR__ . '/middlewares.php';
 
-/**
- * Add Error Handling Middleware
- * The constructor of `ErrorMiddleware` takes in 5 parameters
- *
- * @param CallableResolverInterface $callableResolver - CallableResolver implementation of your choice
- * @param ResponseFactoryInterface $responseFactory - ResponseFactory implementation of your choice
- * @param bool $displayErrorDetails - Should be set to false in production
- * @param bool $logErrors - Parameter is passed to the default ErrorHandler
- * @param bool $logErrorDetails - Display error details in error log
- */
-$errorMiddleware = new ErrorMiddleware(
-        $app->getCallableResolver(),
-        $app->getResponseFactory(),
-        $container->get("settings")->get('slim.displayerrordetails'),
-        $container->get("settings")->get('slim.logerrors'),
-        $container->get("settings")->get('slim.logerrordetails')
-);
-$errorMiddleware->setDefaultErrorHandler($container->get(ErrorHandler::class));
-$app->add($errorMiddleware);
 
+
+$app->add(new RoutingMiddleware($app->getRouteResolver(), $app->getRouteCollector()->getRouteParser()));
 //twig Extensions
 $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) use ($container, $app) {
 
@@ -70,3 +49,27 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) us
 
     return $handler->handle($request);
 });
+
+$app->add(new BasePathMiddleware($app));
+
+/**
+ * Add Error Handling Middleware
+ * The constructor of `ErrorMiddleware` takes in 5 parameters
+ *
+ * @param CallableResolverInterface $callableResolver - CallableResolver implementation of your choice
+ * @param ResponseFactoryInterface $responseFactory - ResponseFactory implementation of your choice
+ * @param bool $displayErrorDetails - Should be set to false in production
+ * @param bool $logErrors - Parameter is passed to the default ErrorHandler
+ * @param bool $logErrorDetails - Display error details in error log
+ */
+$errorMiddleware = new ErrorMiddleware(
+        $app->getCallableResolver(),
+        $app->getResponseFactory(),
+        $container->get("settings")->get('slim.displayerrordetails'),
+        $container->get("settings")->get('slim.logerrors'),
+        $container->get("settings")->get('slim.logerrordetails')
+);
+$errorMiddleware->setDefaultErrorHandler($container->get(ErrorHandler::class));
+$app->add($errorMiddleware);
+
+
