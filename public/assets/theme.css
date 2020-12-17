@@ -1,0 +1,61 @@
+.bg-blue{background-color: #00619D !important;}
+.noselect{-webkit-touch-callout: none;-webkit-user-select: none;-moz-user-select: none;user-select: none;}
+.disabled, [disabled]{pointer-events: none;}
+.sticky{position: fixed !important;}
+.sticky.bottom{bottom: 0;}
+.sticky.top{top: 0;}
+.sticky.right{right: 0;}
+.sticky.left{left: 0;}
+.separator{height: 0; margin-bottom: 4em;}
+.pagination .active{pointer-events: none;}
+body > header {min-height: 4em;}
+body > header.fixed-top + .separator{margin-bottom: 8em;}
+body > .container, body > header .container{max-width: 1300px;}
+body > div.container{min-height: 200px;}
+body >  div.container +  div.container{margin-top: 1em;}
+body > div.container:last-of-type{padding-bottom: 8em;}
+.dropdown-menu.pull-right {
+    -webkit-transform-origin: top right;-moz-transform-origin: top right;
+    -ms-transform-origin: top right;transform-origin: top right;
+    left: auto;right: 0;
+}
+/* footer */
+.footer{margin-top: 2rem; width: 100%; height: 60px; line-height: 60px; background-color: #f5f5f5;overflow: hidden;display: none;}
+@media (min-width: 992px){
+    [data-overflow] .container + .footer{display: block;}
+}
+
+/**
+ * Alertify Custom
+ */
+.alertify .ajs-footer{padding: 5px 15px;}
+.ajs-footer .ajs-buttons{min-height: 50px; height: 50px;}
+.alertify-notifier, .alertify{font-size: 1rem;}
+.alertify .ajs-content{text-align: center; font-size: 14pt; min-height: 64px; vertical-align: middle;}
+.alertify-notifier.ajs-top{top: 4rem;}
+.alertify-notifier.ajs-bottom{bottom: 4rem;}
+
+/**
+ * Loader
+ */
+.loader {
+  height: 2px; width: 100%;
+  position: relative; overflow: hidden;
+  background-color: rgba(0,0,0,0);
+  z-index: 2147483647;
+}
+.loader:before{
+  display: block; position: absolute;
+  content: ""; left: 0px;
+  width: 200px; height: 100%;
+  background-color: #FF9E62; animation: loading .75s linear infinite;
+}
+
+@keyframes loading {
+    from {left: -200px; width: 30%;}
+    50% {width: 30%;}
+    70% {width: 70%;}
+    80% { left: 50%;}
+    95% {left: 120%;}
+    to {left: 100%;}
+}

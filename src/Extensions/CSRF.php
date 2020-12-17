@@ -3,8 +3,8 @@
 namespace App\Extensions;
 
 use Slim\Csrf\Guard;
-use Twig\Extension\{
-    AbstractExtension, GlobalsInterface
+use Twig\{
+    Extension\AbstractExtension, Extension\GlobalsInterface, TwigFunction
 };
 
 class CSRF extends AbstractExtension implements GlobalsInterface {
@@ -29,7 +29,7 @@ class CSRF extends AbstractExtension implements GlobalsInterface {
                 . '">';
     }
 
-    public function getGlobals() {
+    public function getGlobals(): array {
         // CSRF token name and value
         $csrfNameKey = $this->csrf->getTokenNameKey();
         $csrfValueKey = $this->csrf->getTokenValueKey();
