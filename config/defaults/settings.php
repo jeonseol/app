@@ -4,8 +4,8 @@
 // Error reporting
 if (php_sapi_name() !== "cli") session_start();
 
-error_reporting(0);
-ini_set('display_errors', '0');
+error_reporting(1);
+ini_set('display_errors', '1');
 
 // Timezone
 date_default_timezone_set('Europe/Paris');

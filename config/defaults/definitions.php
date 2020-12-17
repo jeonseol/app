@@ -1,12 +1,15 @@
 <?php
 
 use Adbar\Dot;
+use Monolog\{
+    Handler\FilterHandler, Handler\StreamHandler, Logger, Processor\UidProcessor
+};
 use Psr\{
     Container\ContainerInterface, Http\Message\ResponseFactoryInterface, Http\Message\ServerRequestInterface,
-    Http\Server\RequestHandlerInterface
+    Http\Server\RequestHandlerInterface, Log\LoggerInterface
 };
 use Slim\{
-    App, Csrf\Guard, Factory\AppFactory, Interfaces\RouteParserInterface, Views\Twig
+    App, Csrf\Guard, Factory\AppFactory, Handlers\ErrorHandler, Interfaces\RouteParserInterface, Views\Twig
 };
 use function DI\get;
 
@@ -19,7 +22,6 @@ return [
     },
     App::class => function (ContainerInterface $container) {
         AppFactory::setContainer($container);
-
         return AppFactory::create();
     },
     ResponseFactoryInterface::class => function (ContainerInterface $container) {
@@ -27,6 +29,10 @@ return [
     },
     RouteParserInterface::class => function (ContainerInterface $container) {
         return $container->get(App::class)->getRouteCollector()->getRouteParser();
+    },
+    ErrorHandler::class => function(ContainerInterface $container) {
+        $app = $container->get(App::class);
+        return new ErrorHandler($app->getCallableResolver(), $app->getResponseFactory(), $container->get(LoggerInterface::class));
     },
     Twig::class => function (ContainerInterface $container) {
         $settings = $container->get('settings');
@@ -44,4 +50,16 @@ return [
         return $guard;
     },
     "csrf" => get(Guard::class),
+    LoggerInterface::class => function(ContainerInterface $container) {
+
+        $settings = $container->get('settings');
+        $path = $settings->get('paths.logs');
+
+        $handlers = [
+            new FilterHandler(new StreamHandler($path . "/app.log", Logger::DEBUG), Logger::DEBUG, 399),
+            new StreamHandler($path . "/error.log", Logger::ERROR),
+        ];
+        $processor = new UidProcessor();
+        return new Logger('SlimApp', $handlers, [$processor]);
+    },
 ];

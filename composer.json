@@ -46,9 +46,7 @@
         "psr-4": {
             "App\\": "src/"
         },
-        "files": [
-            "config/config.php"
-        ]
+        "files": []
     },
     "autoload-dev": {},
     "scripts": {}

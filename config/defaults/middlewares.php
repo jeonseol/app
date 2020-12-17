@@ -27,15 +27,15 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) us
 
 
         //global vars
-        if (file_exists(__DIR__) . '/twig/globals.php') $data = require __DIR__ . '/twig/globals.php';
+        if (file_exists(dirname(__DIR__) . '/twig/globals.php')) $data = require dirname(__DIR__) . '/twig/globals.php';
         else $data = [];
 
         $twig->addExtension(new TwigGlobalVars($container, $data));
         $twig->addExtension(new Tests());
         $twig->addExtension($container->get(CSRF::class));
 
-        if (file_exists(__DIR__ . '/twig/extensions.php')) {
-            $extensions = require __DIR__ . '/twig/extensions.php';
+        if (file_exists(dirname(__DIR__) . '/twig/extensions.php')) {
+            $extensions = require dirname(__DIR__) . '/twig/extensions.php';
             if (is_array($extensions)) {
                 foreach ($extensions as $ext) {
                     $twig->addExtension($ext);
