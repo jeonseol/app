@@ -1,7 +1,7 @@
 <?php
 
 use App\{
-    Controllers\BaseController, Extensions\CSRF, Extensions\Tests, Extensions\TwigGlobalVars
+    Extensions\CSRF, Extensions\Tests, Extensions\TwigGlobalVars, Models\User
 };
 use Manju\ORM;
 use Psr\{
@@ -32,10 +32,16 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) us
         //db Connection
         ORM::setContainer($container);
         ORM::start(...$container->get('settings')->get('db.models'));
+        //create admin
+        if (User::countEntries() == 0) {
+            $user = new User();
+            $user->name = 'admin';
+            $user->password = 'Passw0rd';
+            $user->save();
+        }
     } catch (Exception $err) {
         $container->get(LoggerInterface::class)->error($err->getMessage());
         throw $err;
-        //return $container->get(BaseController::class)->renderText($err->getMessage());
     }
 
 

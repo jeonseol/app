@@ -7,7 +7,7 @@ use Manju\{
 };
 
 /**
- * @required (name,email,password)
+ * @required (name,password)
  * @timestamps
  *
  * @property string $name
@@ -23,7 +23,10 @@ class User extends Model {
      */
     const PASSWORD_CHECK = '/^(?=\S{8,})(?=\S*[A-Z])(?=\S*[\d])\S*$/';
 
-    /** @var string */
+    /**
+     * @unique
+     * @var string
+     */
     protected $name;
 
     /**
@@ -51,6 +54,7 @@ class User extends Model {
     }
 
     public function setName(string $name) {
+        if (self::hasName($name)) throw new ValidationError("Name $name already exists");
         $this->name = $name;
         return $this;
     }
@@ -58,7 +62,7 @@ class User extends Model {
     public function setEmail(string $email) {
         $this->email = null;
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return $this;
-        if (self::hasEmail($email)) throw new ValidationError("Email already exists");
+        if (self::hasEmail($email)) throw new ValidationError("Email $email already exists");
         $this->email = filter_var($email, FILTER_SANITIZE_EMAIL);
         return $this;
     }
@@ -82,8 +86,21 @@ class User extends Model {
         return $this->getSharedList(Group::class);
     }
 
+    /**
+     * Checks if user is in the specified group
+     * @param Group $group
+     * @return bool
+     */
     public function hasGroup(Group $group): bool {
         return $this->getGroups()->hasItem($group);
+    }
+
+    public function addGroup(Group $group) {
+
+        if (!$this->hasGroup($group)) $this->getGroups()->addItem($group);
+
+
+        return $this;
     }
 
     ////////////////////////////   Utils   ////////////////////////////
@@ -115,10 +132,10 @@ class User extends Model {
             }
             if (self::countEntries() === 1) {
                 $admin = Group::loadGroup('admin');
-                $this->getGroups()->addItem($admin);
+                $this->addGroup($admin);
             }
             $user = Group::loadGroup('user');
-            $this->getGroups()->addItem($user);
+            $this->addGroup($user);
             $this->save();
         }
     }
@@ -142,12 +159,35 @@ class User extends Model {
     }
 
     /**
+     * Get user by name
+     *
+     * @param string $name
+     * @param string $password
+     * @return User|null
+     */
+    public static function getUserByName(string $name, string $password): ?User {
+        if ($user = self::findOne('name = ?', [$name])) {
+            if ($user->checkPassword($password) === true) return $user;
+        }
+        return null;
+    }
+
+    /**
      * Checks if email already in database
      * @param string $email
      * @return type
      */
     private static function hasEmail(string $email) {
         return self::countEntries('email = ?', [$email]) > 0;
+    }
+
+    /**
+     * Checks if email already in database
+     * @param string $name
+     * @return type
+     */
+    private static function hasName(string $name) {
+        return self::countEntries('name = ?', [$name]) > 0;
     }
 
 }

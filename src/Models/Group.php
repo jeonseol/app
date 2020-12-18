@@ -54,6 +54,7 @@ class Group extends Model {
             $this->getUsers()->addItem($user);
             $this->save();
         }
+        return $this;
     }
 
     ////////////////////////////   Finders   ////////////////////////////
