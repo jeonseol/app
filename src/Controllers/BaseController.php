@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use JsonException,
+use App\Models\User,
+    JsonException,
     NGSOFT\Tools\Objects\stdObject;
 use Psr\{
     Container\ContainerInterface, Http\Message\ResponseInterface, Http\Message\ServerRequestInterface
@@ -35,9 +36,6 @@ class BaseController {
 
     /** @var stdObject */
     protected $data;
-
-    /** @var User|null */
-    protected $user;
 
     /**
      * Add Global available to all controllers
@@ -115,6 +113,11 @@ class BaseController {
      * @return ResponseInterface
      */
     public function render(string $page, array $data = []): ResponseInterface {
+
+        if (
+                $this->requirelogin == true and
+                $this->isLoggedIn() == false
+        ) return $this->redirectToLogin();
         $data = array_replace(self::$globals, $this->data->toArray(), $data);
         return $this->get("view")->render($this->response, $page, $data);
     }
@@ -165,6 +168,22 @@ class BaseController {
                                 $this->app->getRouteCollector()->getRouteParser()
                                 ->urlFor($routename, $args)
         );
+    }
+
+    /**
+     * Redirect to login Route
+     * @return ResponseInterface
+     */
+    protected function redirectToLogin(): ResponseInterface {
+        return $this->redirectToRoute("auth.login");
+    }
+
+    /**
+     * Checks if logged in
+     * @return bool
+     */
+    protected function isLoggedIn(): bool {
+        return $this->user instanceof User;
     }
 
     ////////////////////////////   Proxy   ////////////////////////////

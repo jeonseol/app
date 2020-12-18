@@ -1,7 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 use App\{
-    Extensions\CSRF, Extensions\Tests, Extensions\TwigGlobalVars, Models\User
+    Extensions\CSRF, Extensions\Tests, Extensions\TwigGlobalVars, Middlewares\SessionLoader, Middlewares\SessionLogin, Models\User
 };
 use Manju\ORM;
 use Psr\{
@@ -9,8 +11,8 @@ use Psr\{
 };
 use Selective\BasePath\BasePathMiddleware;
 use Slim\{
-    Http\ServerRequest, Interfaces\CallableResolverInterface, Interfaces\ErrorHandlerInterface, Middleware\ErrorMiddleware, Views\Twig,
-    Views\TwigMiddleware
+    Csrf\Guard, Http\ServerRequest, Interfaces\CallableResolverInterface, Interfaces\ErrorHandlerInterface, Middleware\ErrorMiddleware,
+    Views\Twig, Views\TwigMiddleware
 };
 
 $app->addBodyParsingMiddleware();
@@ -22,11 +24,15 @@ if (file_exists(dirname(__DIR__) . '/middlewares.php')) require_once dirname(__D
 //$app->add(new RoutingMiddleware($app->getRouteResolver(), $app->getRouteCollector()->getRouteParser()));
 $app->addRoutingMiddleware();
 
+$app->add(SessionLoader::class);
 
+/* to add into auth route
+  $app->add(SessionLogin::class); */
+$app->add(Guard::class);
 
 $app->add(new BasePathMiddleware($app));
 
-$app->add(function (ServerRequest $request, RequestHandlerInterface $handler) use ($container, $app) {
+$app->add(function (ServerRequest $request, RequestHandlerInterface $handler) use ($container) {
 
     try {
         //db Connection
