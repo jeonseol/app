@@ -40,4 +40,10 @@ $settings['twig'] = [
     ]
 ];
 
+$settings['cache'] = [
+    'path' => $settings['paths']['tmp'] . '/phpcache',
+    'ttl' => 5 * minute,
+    'namespace' => 'slimapp'
+];
+
 return $settings;

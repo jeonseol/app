@@ -1,6 +1,7 @@
 <?php
 
-use Psr\Log\LoggerInterface;
+declare(strict_types=1);
+
 
 // Slim App Loader
 $root = dirname(__DIR__);

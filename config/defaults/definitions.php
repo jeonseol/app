@@ -5,9 +5,10 @@ use Adbar\Dot,
 use Monolog\{
     Handler\FilterHandler, Handler\StreamHandler, Logger, Processor\UidProcessor
 };
+use NGSOFT\Tools\Cache\PHPCache;
 use Psr\{
-    Container\ContainerInterface, Http\Message\ResponseFactoryInterface, Http\Message\ServerRequestInterface,
-    Http\Server\RequestHandlerInterface, Log\LoggerInterface
+    Cache\CacheItemPoolInterface, Container\ContainerInterface, Http\Message\ResponseFactoryInterface,
+    Http\Message\ServerRequestInterface, Http\Server\RequestHandlerInterface, Log\LoggerInterface
 };
 use Slim\{
     App, Csrf\Guard, Factory\AppFactory, Interfaces\CallableResolverInterface, Interfaces\ErrorHandlerInterface,
@@ -67,4 +68,8 @@ return [
         $processor = new UidProcessor();
         return new Logger($settings->get('app.title'), $handlers, [$processor]);
     },
+    CacheItemPoolInterface::class => function (ContainerInterface $container) {
+        $settings = $container->get('settings');
+        return new PHPCache($settings->get('cache.path'), $settings->get('cache.ttl'), $settings->get('cache.namespace'));
+    }
 ];
