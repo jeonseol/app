@@ -1,7 +1,8 @@
 <?php
 
 use Adbar\Dot,
-    App\Middlewares\SlimErrorHandler;
+    App\Middlewares\SlimErrorHandler,
+    Manju\Connection;
 use Monolog\{
     Handler\FilterHandler, Handler\StreamHandler, Logger, Processor\UidProcessor
 };
@@ -71,5 +72,21 @@ return [
     CacheItemPoolInterface::class => function (ContainerInterface $container) {
         $settings = $container->get('settings');
         return new PHPCache($settings->get('cache.path'), $settings->get('cache.ttl'), $settings->get('cache.namespace'));
-    }
+    },
+    Connection::class => function(ContainerInterface $container) {
+
+        $settings = $container->get('settings');
+        $host = getenv('dbhost') ?? $settings->get('db.host');
+        $port = getenv('dbport') ?? $settings->get('db.port');
+        $dbname = getenv('dbname') ?? $settings->get('db.host');
+        $user = getenv('dbuser') ?? $settings->get('db.user');
+        $password = getenv('dbpassword') ?? $settings->get('db.password');
+
+        $dsn = sprintf('mysql:host=%s;dbname=%s;charset=utf8mb4;port=%s', $host, $dbname, $port);
+        return new Connection([
+            'dsn' => $dsn,
+            'user' => $user,
+            'password' => $password
+        ]);
+    },
 ];

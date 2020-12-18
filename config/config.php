@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-use DI\ContainerBuilder,
-    Dotenv\Dotenv;
-use Slim\{
-    App, Views\Twig
-};
+use App\Controllers\BaseController,
+    DI\ContainerBuilder,
+    Dotenv\Dotenv,
+    Manju\ORM,
+    Psr\Log\LoggerInterface,
+    Slim\App;
 
 (Dotenv::createUnsafeImmutable(dirname(__DIR__)))->load();
 
@@ -27,5 +28,6 @@ ini_set('default_mimetype', '');
 require_once __DIR__ . '/defaults/middlewares.php';
 require_once __DIR__ . '/defaults/routes.php';
 if (file_exists(__DIR__ . '/routes.php')) require_once __DIR_ . '/routes.php';
+
 
 return $app;

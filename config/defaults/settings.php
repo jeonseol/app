@@ -46,4 +46,16 @@ $settings['cache'] = [
     'namespace' => 'slimapp'
 ];
 
+$settings['db'] = [
+    'models' => [
+        $settings['paths']['src'] . '/Models'
+    ],
+    'host' => 'localhost',
+    'port' => 3306,
+    'dbname' => 'my_slim_app',
+    'user' => 'root',
+    'password' => 'root'
+];
+
+
 return $settings;
