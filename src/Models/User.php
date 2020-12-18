@@ -71,8 +71,7 @@ class User extends Model {
         $this->password = null;
         $config = \Manju\ORM::getContainer()->get('settings');
         $strong = $config->get('db.strongpasswords');
-        if (!is_bool($strong)) $strong = true;
-        if ($strong = true) {
+        if ($strong) {
             //check password
             if (preg_match(self::PASSWORD_CHECK, $password)) {
                 $this->password = self::encodePassword($password);
@@ -129,10 +128,10 @@ class User extends Model {
 
         if ($this->getGroups()->count() == 0) {
             if (Group::countEntries() === 0) {
-                $admin = new Group();
+                $admin = Group::create();
                 $admin->name = "admin";
                 $admin->save();
-                $user = new Group();
+                $user = Group::create();
                 $user->name = "user";
                 $user->save();
             }

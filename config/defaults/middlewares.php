@@ -34,11 +34,11 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) us
         ORM::start(...$container->get('settings')->get('db.models'));
         //create admin
         if (User::countEntries() == 0) {
-            $user = new User();
+            $user = User::create();
             $user->name = 'admin';
             // $user->password = 'Passw0rd';
             $user->password = 'admin';
-            $user->save();
+            $user->save(true);
         }
     } catch (Exception $err) {
         $container->get(LoggerInterface::class)->error($err->getMessage());

@@ -36,6 +36,9 @@ class BaseController {
     /** @var stdObject */
     protected $data;
 
+    /** @var User|null */
+    protected $user;
+
     /**
      * Add Global available to all controllers
      * @param string $name
@@ -74,6 +77,7 @@ class BaseController {
         $this->request = $request;
         $this->response = $response;
         $this->data = stdObject::create();
+        if ($this->container->has("user")) $this->user = $this->container->get("user");
     }
 
     /**

@@ -55,7 +55,7 @@ $settings['db'] = [
     'dbname' => 'my_slim_app',
     'user' => 'root',
     'password' => 'root',
-    'strongpasswords' => getenv('dbstrongpasswords') ?? false
+    'strongpasswords' => getenv('dbstrongpasswords') == 'true'
 ];
 
 
