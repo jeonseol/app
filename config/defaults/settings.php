@@ -1,24 +1,11 @@
 <?php
 
 // Configure defaults for the whole application.
-// Error reporting
-if (php_sapi_name() !== "cli") session_start();
 
-//error_reporting(0);
-ini_set('display_errors', '1');
 
-// Timezone
-date_default_timezone_set('Europe/Paris');
-
-// Fix MimeType
-ini_set('default_mimetype', '');
-
-// Settings
 $settings = [];
 
 $root = dirname(dirname(__DIR__));
-
-
 
 $settings['paths'] = [
     'root' => $root,
@@ -33,8 +20,6 @@ $settings['paths'] = [
     'tests' => $root . "/tests",
     'tmp' => $root . "/tmp"
 ];
-
-
 
 
 $settings['slim'] = [
