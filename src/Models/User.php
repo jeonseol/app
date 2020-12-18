@@ -69,10 +69,16 @@ class User extends Model {
 
     public function setPassword(string $password) {
         $this->password = null;
-        //check password
-        if (preg_match(self::PASSWORD_CHECK, $password)) {
-            $this->password = self::encodePassword($password);
-        }
+        $config = \Manju\ORM::getContainer()->get('settings');
+        $strong = $config->get('db.strongpasswords');
+        if (!is_bool($strong)) $strong = true;
+        if ($strong = true) {
+            //check password
+            if (preg_match(self::PASSWORD_CHECK, $password)) {
+                $this->password = self::encodePassword($password);
+            }
+        } else $this->password = self::encodePassword($password);
+
         return $this;
     }
 

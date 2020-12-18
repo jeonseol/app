@@ -36,7 +36,8 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) us
         if (User::countEntries() == 0) {
             $user = new User();
             $user->name = 'admin';
-            $user->password = 'Passw0rd';
+            // $user->password = 'Passw0rd';
+            $user->password = 'admin';
             $user->save();
         }
     } catch (Exception $err) {

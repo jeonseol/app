@@ -54,7 +54,8 @@ $settings['db'] = [
     'port' => 3306,
     'dbname' => 'my_slim_app',
     'user' => 'root',
-    'password' => 'root'
+    'password' => 'root',
+    'strongpasswords' => getenv('dbstrongpasswords') ?? false
 ];
 
 
