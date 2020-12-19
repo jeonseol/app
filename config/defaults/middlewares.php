@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\{
-    Extensions\CSRF, Extensions\Tests, Extensions\TwigGlobalVars, Middlewares\SessionLoader, Middlewares\SessionLogin, Models\User
+    Extensions\CSRF, Extensions\Tests, Extensions\TwigGlobalVars, Middlewares\SessionLoader, Models\User
 };
 use Manju\ORM;
 use Psr\{
@@ -30,7 +30,7 @@ $app->add(SessionLoader::class);
   $app->add(SessionLogin::class); */
 $app->add(Guard::class);
 
-$app->add(new BasePathMiddleware($app));
+$app->add(BasePathMiddleware::class);
 
 $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) use ($container) {
 

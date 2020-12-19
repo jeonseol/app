@@ -46,15 +46,17 @@ $settings['cache'] = [
     'namespace' => 'slimapp'
 ];
 
+
 $settings['db'] = [
     'models' => [
         $settings['paths']['src'] . '/Models'
     ],
-    'host' => 'localhost',
-    'port' => 3306,
-    'dbname' => 'my_slim_app',
-    'user' => 'root',
-    'password' => 'root',
+    'host' => getenv('dbhost') ?? 'localhost',
+    'port' => intval(getenv('dbport') ?? 3306),
+    'dbname' => getenv('dbname') ?? 'my_slim_app',
+    'user' => getenv('dbuser') ?? 'root',
+    'password' => getenv('dbpassword') ?? 'root',
+    'charset' => getenv('dbcharset') ?? 'utf8mb4',
     'strongpasswords' => getenv('dbstrongpasswords') == 'true'
 ];
 

@@ -11,6 +11,7 @@ use Psr\{
     Cache\CacheItemPoolInterface, Container\ContainerInterface, Http\Message\ResponseFactoryInterface,
     Http\Message\ServerRequestInterface, Http\Server\RequestHandlerInterface, Log\LoggerInterface
 };
+use Selective\BasePath\BasePathMiddleware;
 use Slim\{
     App, Csrf\Guard, Factory\AppFactory, Interfaces\CallableResolverInterface, Interfaces\ErrorHandlerInterface,
     Interfaces\RouteParserInterface, Views\Twig
@@ -57,6 +58,11 @@ return [
         return $guard;
     },
     "csrf" => get(Guard::class),
+    BasePathMiddleware::class => function (ContainerInterface $container) {
+        $app = $container->get(App::class);
+        $sapi = php_sapi_name();
+        return new BasePathMiddleware($app, $sapi);
+    },
     LoggerInterface::class => function(ContainerInterface $container) {
 
         $settings = $container->get('settings');
@@ -76,13 +82,15 @@ return [
     Connection::class => function(ContainerInterface $container) {
 
         $settings = $container->get('settings');
-        $host = getenv('dbhost') ?? $settings->get('db.host');
-        $port = getenv('dbport') ?? $settings->get('db.port');
-        $dbname = getenv('dbname') ?? $settings->get('db.host');
-        $user = getenv('dbuser') ?? $settings->get('db.user');
-        $password = getenv('dbpassword') ?? $settings->get('db.password');
+        $host = $settings->get('db.host');
+        $port = $settings->get('db.port');
+        $dbname = $settings->get('db.dbname');
+        $user = $settings->get('db.user');
+        $password = $settings->get('db.password');
+        $charset = $settings->get('db.charset');
 
-        $dsn = sprintf('mysql:host=%s;dbname=%s;charset=utf8mb4;port=%s', $host, $dbname, $port);
+        $dsn = sprintf('mysql:host=%s;dbname=%s;charset=%s;port=%s', $host, $dbname, $charset, $port);
+
         return new Connection([
             'dsn' => $dsn,
             'user' => $user,
