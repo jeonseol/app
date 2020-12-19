@@ -5,7 +5,6 @@ use App\Extensions\{
 };
 
 return [
-    TwigGlobalVars::class,
     Tests::class,
     CSRF::class,
 ];

@@ -88,13 +88,11 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
 
     $twig = $this->get(Twig::class);
     if ($twig instanceof Twig) {
-        //some functions
-        //$twig->addExtension(new BaseUrl($request, $app->getBasePath()));
-        //global vars
+
         if (file_exists(__DIR__ . '/twig/globals.php')) $data = require __DIR__ . '/twig/globals.php';
         else $data = [];
         foreach ($data as $key => $value) {
-            TwigGlobalVars::addGlobal($key, $value);
+            $twig->getEnvironment()->addGlobal($key, $value);
         }
 
         if (file_exists(__DIR__ . '/twig/extensions.php')) {
