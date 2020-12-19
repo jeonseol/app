@@ -30,9 +30,8 @@ if (php_sapi_name() !== "cli") {
 date_default_timezone_set($container->get('settings')->get('app.tz'));
 ini_set('default_mimetype', '');
 
-require_once __DIR__ . '/defaults/middlewares.php';
-require_once __DIR__ . '/defaults/routes.php';
-if (file_exists(__DIR__ . '/routes.php')) require_once __DIR_ . '/routes.php';
+require_once __DIR__ . '/middlewares.php';
+require_once __DIR__ . '/routes.php';
 
 
 return $app;

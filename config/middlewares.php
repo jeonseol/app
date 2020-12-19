@@ -17,7 +17,6 @@ use Slim\{
 
 $app->addBodyParsingMiddleware();
 
-if (file_exists(dirname(__DIR__) . '/middlewares.php')) require_once dirname(__DIR__) . '/middlewares.php';
 
 
 
@@ -92,18 +91,17 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
         //some functions
         //$twig->addExtension(new BaseUrl($request, $app->getBasePath()));
         //global vars
-        if (file_exists(dirname(__DIR__) . '/twig/globals.php')) $data = require dirname(__DIR__) . '/twig/globals.php';
+        if (file_exists(__DIR__ . '/twig/globals.php')) $data = require __DIR__ . '/twig/globals.php';
         else $data = [];
+        foreach ($data as $key => $value) {
+            TwigGlobalVars::addGlobal($key, $value);
+        }
 
-        $twig->addExtension(new TwigGlobalVars($container, $data));
-        $twig->addExtension(new Tests());
-        $twig->addExtension($this->get(CSRF::class));
-
-        if (file_exists(dirname(__DIR__) . '/twig/extensions.php')) {
-            $extensions = require dirname(__DIR__) . '/twig/extensions.php';
+        if (file_exists(__DIR__ . '/twig/extensions.php')) {
+            $extensions = require __DIR__ . '/twig/extensions.php';
             if (is_array($extensions)) {
-                foreach ($extensions as $ext) {
-                    $twig->addExtension($ext);
+                foreach ($extensions as $classname) {
+                    $twig->addExtension($this->get($classname));
                 }
             }
         }

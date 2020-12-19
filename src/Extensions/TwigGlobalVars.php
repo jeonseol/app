@@ -16,17 +16,12 @@ class TwigGlobalVars extends AbstractExtension implements GlobalsInterface {
     private static $data = [];
 
     /** @var ContainerInterface */
-    private $container;
+    private $twig;
 
     public function __construct(
-            ContainerInterface $container,
-            array $data = []
+            Twig $twig
     ) {
-        $this->container = $container;
-
-        foreach ($data as $k => $v) {
-            static::$data[$k] = $v;
-        }
+        $this->twig = $twig;
     }
 
     /**
@@ -35,7 +30,7 @@ class TwigGlobalVars extends AbstractExtension implements GlobalsInterface {
      * @param mixed $value
      */
     public static function addGlobal(string $name, $value) {
-        $this->container->get(Twig::class)
+        $this->twig
                 ->getEnvironment()
                 ->addGlobal($name, $value);
     }
