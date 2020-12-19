@@ -37,9 +37,17 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) us
     try {
         //db Connection
         ORM::setContainer($container);
-        ORM::start(...$container->get('settings')->get('db.models'));
+        ORM::addModelPath(...$container->get('settings')->get('db.models'));
+        ORM::start();
         //create admin
         if (User::countEntries() == 0) {
+            $user = User::create();
+            $user->name = 'admin';
+            // $user->password = 'Passw0rd';
+            $user->password = 'admin';
+            $user->save(true);
+        }//test unique
+        else {
             $user = User::create();
             $user->name = 'admin';
             // $user->password = 'Passw0rd';

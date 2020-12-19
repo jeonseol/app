@@ -14,7 +14,10 @@ use Manju\{
  */
 class Group extends Model {
 
-    /** @var string */
+    /**
+     * @var string
+     * @unique
+     */
     protected $name;
 
     public function getName(): string {

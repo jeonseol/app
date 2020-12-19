@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Manju\{
-    Exceptions\ValidationError, Helpers\Collection, ORM\Model
+    Helpers\Collection, ORM, ORM\Model
 };
 
 /**
@@ -54,7 +54,7 @@ class User extends Model {
     }
 
     public function setName(string $name) {
-        if (self::hasName($name)) throw new ValidationError("Name $name already exists");
+        //if (self::hasName($name)) throw new ValidationError("Name $name already exists");
         $this->name = $name;
         return $this;
     }
@@ -62,14 +62,14 @@ class User extends Model {
     public function setEmail(string $email) {
         $this->email = null;
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return $this;
-        if (self::hasEmail($email)) throw new ValidationError("Email $email already exists");
+        //if (self::hasEmail($email)) throw new ValidationError("Email $email already exists");
         $this->email = filter_var($email, FILTER_SANITIZE_EMAIL);
         return $this;
     }
 
     public function setPassword(string $password) {
         $this->password = null;
-        $config = \Manju\ORM::getContainer()->get('settings');
+        $config = ORM::getContainer()->get('settings');
         $strong = $config->get('db.strongpasswords');
         if ($strong) {
             //check password

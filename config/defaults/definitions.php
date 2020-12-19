@@ -82,18 +82,20 @@ return [
     Connection::class => function(ContainerInterface $container) {
 
         $settings = $container->get('settings');
+        $name = $settings->get('db.name');
         $host = $settings->get('db.host');
         $port = $settings->get('db.port');
         $dbname = $settings->get('db.dbname');
-        $user = $settings->get('db.user');
+        $user = $settings->get('db.username');
         $password = $settings->get('db.password');
         $charset = $settings->get('db.charset');
 
         $dsn = sprintf('mysql:host=%s;dbname=%s;charset=%s;port=%s', $host, $dbname, $charset, $port);
 
         return new Connection([
+            'name' => $name,
             'dsn' => $dsn,
-            'user' => $user,
+            'username' => $user,
             'password' => $password
         ]);
     },

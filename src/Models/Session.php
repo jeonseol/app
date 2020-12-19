@@ -22,7 +22,10 @@ class Session extends Model {
     /** @var int */
     protected $expire;
 
-    /** @var string */
+    /**
+     * @var string
+     * @unique
+     */
     protected $sid;
 
     public function setUser(User $user) {
