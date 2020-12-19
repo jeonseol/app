@@ -7,12 +7,12 @@ use App\{
 };
 use Manju\ORM;
 use Psr\{
-    Http\Message\ResponseFactoryInterface, Http\Server\RequestHandlerInterface, Log\LoggerInterface
+    Container\ContainerInterface, Http\Message\ResponseFactoryInterface, Http\Server\RequestHandlerInterface, Log\LoggerInterface
 };
 use Selective\BasePath\BasePathMiddleware;
 use Slim\{
-    Csrf\Guard, Http\ServerRequest, Interfaces\CallableResolverInterface, Interfaces\ErrorHandlerInterface, Middleware\ErrorMiddleware,
-    Views\Twig, Views\TwigMiddleware
+    App, Csrf\Guard, Http\ServerRequest, Interfaces\CallableResolverInterface, Interfaces\ErrorHandlerInterface,
+    Middleware\ErrorMiddleware, Views\Twig, Views\TwigMiddleware
 };
 
 $app->addBodyParsingMiddleware();
@@ -32,27 +32,24 @@ $app->add(Guard::class);
 
 $app->add(BasePathMiddleware::class);
 
-$app->add(function (ServerRequest $request, RequestHandlerInterface $handler) use ($container) {
+$app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
+
+    $settings = $this->get('settings');
+    $model_paths = $settings->get('db.models');
+    $strong = $settings->get('db.strongpasswords');
+
 
     try {
         //db Connection
-        ORM::setContainer($container);
-        ORM::addModelPath(...$container->get('settings')->get('db.models'));
+        ORM::setContainer($this->get(ContainerInterface::class));
+        ORM::addModelPath(...$model_paths);
         ORM::start();
         //create admin
         if (User::countEntries() == 0) {
             $user = User::create();
             $user->name = 'admin';
-            // $user->password = 'Passw0rd';
-            $user->password = 'admin';
-            $user->save(true);
-        }//test unique
-        else {
-            $user = User::create();
-            $user->name = 'admin';
-            // $user->password = 'Passw0rd';
-            $user->password = 'admin';
-            $user->save(true);
+            $user->password = $strong ? 'Passw0rd' : 'admin';
+            $user->save();
         }
     } catch (Exception $err) {
         $container->get(LoggerInterface::class)->error($err->getMessage());
@@ -85,9 +82,12 @@ $errorMiddleware->setDefaultErrorHandler($container->get(ErrorHandlerInterface::
 $app->add($errorMiddleware);
 
 //twig Extensions
-$app->add(function (ServerRequest $request, RequestHandlerInterface $handler) use ($container, $app) {
+$app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
 
-    $twig = $container->get(Twig::class);
+    $container = $this->get(ContainerInterface::class);
+    $app = $this->get(App::class);
+
+    $twig = $this->get(Twig::class);
     if ($twig instanceof Twig) {
         //some functions
         //$twig->addExtension(new BaseUrl($request, $app->getBasePath()));
@@ -97,7 +97,7 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) us
 
         $twig->addExtension(new TwigGlobalVars($container, $data));
         $twig->addExtension(new Tests());
-        $twig->addExtension($container->get(CSRF::class));
+        $twig->addExtension($this->get(CSRF::class));
 
         if (file_exists(dirname(__DIR__) . '/twig/extensions.php')) {
             $extensions = require dirname(__DIR__) . '/twig/extensions.php';
