@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\{
-    Extensions\CSRF, Extensions\Tests, Extensions\TwigGlobalVars, Middlewares\SessionLoader, Models\User
+    Middlewares\PostData, Middlewares\SessionLoader, Models\User
 };
 use Manju\ORM;
 use Psr\{
@@ -27,6 +27,7 @@ $app->add(SessionLoader::class);
 
 /* to add into auth route
   $app->add(SessionLogin::class); */
+$app->add(PostData::class);
 $app->add(Guard::class);
 
 $app->add(BasePathMiddleware::class);
@@ -51,7 +52,7 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
             $user->save();
         }
     } catch (Exception $err) {
-        $container->get(LoggerInterface::class)->error($err->getMessage());
+        $this->get(LoggerInterface::class)->error($err->getMessage());
         throw $err;
     }
 
@@ -84,9 +85,9 @@ $app->add($errorMiddleware);
 $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
 
     $container = $this->get(ContainerInterface::class);
-    $app = $this->get(App::class);
+    $app = $container->get(App::class);
+    $twig = $container->get(Twig::class);
 
-    $twig = $this->get(Twig::class);
     if ($twig instanceof Twig) {
 
         if (file_exists(__DIR__ . '/twig/globals.php')) $data = require __DIR__ . '/twig/globals.php';

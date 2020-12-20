@@ -2,8 +2,8 @@
 
 namespace App\Middlewares;
 
-use App\{
-    Extensions\TwigGlobalVars, Models\Session
+use App\Models\{
+    Session, User
 };
 use NGSOFT\Tools\Objects\SessionStorage;
 use Psr\{
@@ -22,10 +22,12 @@ class SessionLoader implements MiddlewareInterface {
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
         $session = $this->container->get(SessionStorage::class);
+
         Session::CleanUp();
         if ($sid = $session->getItem("sid")) {
             if ($usersession = Session::getSession($sid)) {
-                $this->container->set("user", $usersession->user);
+                $globals = $this->container->get('globals');
+                $globals['user'] = $usersession->user;
             } else $session->removeItem("sid");
         }
         return $handler->handle($request);

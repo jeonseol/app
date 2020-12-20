@@ -6,7 +6,9 @@ use Adbar\Dot,
 use Monolog\{
     Handler\FilterHandler, Handler\StreamHandler, Logger, Processor\UidProcessor
 };
-use NGSOFT\Tools\Cache\PHPCache;
+use NGSOFT\Tools\{
+    Cache\PHPCache, Objects\stdObject
+};
 use Psr\{
     Cache\CacheItemPoolInterface, Container\ContainerInterface, Http\Message\ResponseFactoryInterface,
     Http\Message\ServerRequestInterface, Http\Server\RequestHandlerInterface, Log\LoggerInterface
@@ -24,6 +26,9 @@ return [
     "settings" => function() {
         $settings = require dirname(__DIR__) . '/settings.php';
         return new Dot($settings);
+    },
+    "globals" => function() {
+        return stdObject::create();
     },
     App::class => function (ContainerInterface $container) {
         AppFactory::setContainer($container);

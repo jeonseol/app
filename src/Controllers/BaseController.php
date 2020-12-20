@@ -11,7 +11,7 @@ use Psr\{
     Container\ContainerInterface, Http\Message\ResponseInterface, Http\Message\ServerRequestInterface
 };
 use Slim\{
-    App, Factory\ServerRequestCreatorFactory, Http\Response, Http\ServerRequest
+    App, Factory\ServerRequestCreatorFactory, Http\Response, Http\ServerRequest, Views\Twig
 };
 
 class BaseController {
@@ -75,7 +75,10 @@ class BaseController {
         $this->request = $request;
         $this->response = $response;
         $this->data = stdObject::create();
-        if ($this->container->has("user")) $this->user = $this->container->get("user");
+
+        foreach ($container->get('globals')->toArray() as $key => $value) {
+            $this->data[$key] = $value;
+        }
     }
 
     /**
@@ -119,7 +122,7 @@ class BaseController {
                 $this->isLoggedIn() == false
         ) return $this->redirectToLogin();
         $data = array_replace(self::$globals, $this->data->toArray(), $data);
-        return $this->get("view")->render($this->response, $page, $data);
+        return $this->get(Twig::class)->render($this->response, $page, $data);
     }
 
     /**

@@ -18,7 +18,6 @@ class SessionLogin extends SessionLoader {
         if ($request->getAttribute('csrf_status') !== false) {
 
             $session = $this->container->get(SessionStorage::class);
-
             if ($session->getItem("sid") === null and $request->getMethod() === "POST") {
                 if (
                         $request instanceof ServerRequest and count($request->getParams()) > 0
@@ -44,7 +43,9 @@ class SessionLogin extends SessionLoader {
                             if ($user = User::getUserByName($name, $pass)) {
                                 $usersession = Session::create();
                                 $usersession->user = $user;
-                                if ($usersession->save() !== null) $session->setItem("sid", $usersession->sid);
+                                if ($usersession->save()) {
+                                    $session->setItem("sid", $usersession->sid);
+                                }
                             }
                         }
                         return parent::process($request, $handler);
