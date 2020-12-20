@@ -20,7 +20,8 @@ class SessionLogin extends SessionLoader {
             $session = $this->container->get(SessionStorage::class);
             if ($session->getItem("sid") === null and $request->getMethod() === "POST") {
                 if (
-                        $request instanceof ServerRequest and count($request->getParams()) > 0
+                        $request instanceof ServerRequest
+                        and count($request->getParams()) > 0
                 ) {
                     $email = $request->getParam("email");
                     $name = $request->getParam("username");
@@ -48,6 +49,7 @@ class SessionLogin extends SessionLoader {
                                 }
                             }
                         }
+                        $session->removeItem('postdata');
                         return parent::process($request, $handler);
                     }
                 }
