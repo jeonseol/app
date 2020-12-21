@@ -50,7 +50,8 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
             $user = User::create();
             $user->name = 'admin';
             $user->password = $strong ? 'Passw0rd' : 'admin';
-            $user->save();
+            $user->save(true);
+            exit;
         } else {
             var_dump(User::findOne());
             exit;
