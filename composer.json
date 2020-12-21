@@ -35,7 +35,9 @@
         "monolog/monolog": "^2",
 
         "vlucas/phpdotenv": "^5.2",
-        "adbario/php-dot-notation": "^2.2"
+        "adbario/php-dot-notation": "^2.2",
+
+        "ngsoft/manju": "^3"
 
 
     },
