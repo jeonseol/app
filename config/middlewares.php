@@ -49,6 +49,7 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
         if (User::countEntries() == 0) {
             $user = User::create();
             $user->name = 'admin';
+            // $user->name = 12354;
             $user->password = $strong ? 'Passw0rd' : 'admin';
             $user->save(true);
             exit;
