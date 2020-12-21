@@ -51,6 +51,9 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
             $user->name = 'admin';
             $user->password = $strong ? 'Passw0rd' : 'admin';
             $user->save();
+        } else {
+            var_dump(User::findOne());
+            exit;
         }
     } catch (Exception $err) {
         $this->get(LoggerInterface::class)->error($err->getMessage());
