@@ -35,29 +35,15 @@ $app->add(BasePathMiddleware::class);
 
 $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
 
-    $settings = $this->get('settings');
-    $model_paths = $settings->get('db.models');
-    $strong = $settings->get('db.strongpasswords');
 
 
-    try {
-        //db Connection
-        ORM::setContainer($this->get(ContainerInterface::class));
-        ORM::addModelPath(...$model_paths);
-        ORM::start();
-        //create admin
-        if (User::countEntries() == 0) {
-            $user = User::create();
-            $user->name = 'admin';
-            // $user->name = 12354;
-            $user->password = $strong ? 'Passw0rd' : 'admin';
-            $user->save();
-        }
-    } catch (Exception $err) {
-        $this->get(LoggerInterface::class)->error($err->getMessage());
-        throw $err;
-    }
-
+    /* if (User::countEntries() == 0) {
+      $user = User::create();
+      $user->name = 'admin';
+      // $user->name = 12354;
+      $user->password = $container->get('settings')->get('db.strongpasswords') ? 'Passw0rd' : 'admin';
+      $user->save();
+      } */
 
     return $handler->handle($request);
 });
