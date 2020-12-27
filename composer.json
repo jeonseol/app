@@ -1,5 +1,5 @@
 {
-    "name": "jeonseol/app",
+    "name": "jeonseol/slimapp",
     "type": "project",
     "license": "MIT",
     "authors": [{
@@ -38,6 +38,7 @@
         "adbario/php-dot-notation": "^2.2",
 
         "ngsoft/manju": "^3",
+        "ngsoft/tools": "^1.5",
         "ngsoft/stdio": "^2"
 
 
