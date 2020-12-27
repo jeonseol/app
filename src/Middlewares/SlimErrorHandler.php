@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Middlewares;
 
+use App\Controllers\BaseController;
 use Psr\{
     Container\ContainerInterface, Http\Message\ResponseFactoryInterface, Http\Message\ResponseInterface, Log\LoggerInterface
 };
@@ -32,7 +33,7 @@ class SlimErrorHandler extends ErrorHandler {
             $response = $this->responseFactory->createResponse($this->statusCode);
             $response = $response->withHeader('Content-type', $this->contentType);
 
-            $controller = $this->container->get(\App\Controllers\BaseController::class);
+            $controller = $this->container->get(BaseController::class);
 
             $data = [
                 'title' => $this->container->get("settings")->get('app.title') . " Error",

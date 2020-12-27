@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use App\{
-    Middlewares\PostData, Middlewares\SessionLoader, Models\User
+use App\Middlewares\{
+    PostData, SessionLoader
 };
-use Manju\ORM;
+use NGSOFT\Commands\CommandMiddleware;
 use Psr\{
-    Container\ContainerInterface, Http\Message\ResponseFactoryInterface, Http\Server\RequestHandlerInterface, Log\LoggerInterface
+    Container\ContainerInterface, Http\Message\ResponseFactoryInterface, Http\Server\RequestHandlerInterface
 };
 use Selective\BasePath\BasePathMiddleware;
 use Slim\{
@@ -105,4 +105,4 @@ $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
     return $handler->handle($request);
 });
 
-
+$app->add(CommandMiddleware::class);

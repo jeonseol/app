@@ -6,8 +6,8 @@ use Adbar\Dot,
 use Monolog\{
     Handler\FilterHandler, Handler\StreamHandler, Logger, Processor\UidProcessor
 };
-use NGSOFT\Tools\{
-    Cache\PHPCache, Objects\stdObject
+use NGSOFT\{
+    Commands\CommandMiddleware, Tools\Cache\PHPCache, Tools\Objects\stdObject
 };
 use Psr\{
     Cache\CacheItemPoolInterface, Container\ContainerInterface, Http\Message\ResponseFactoryInterface,
@@ -104,4 +104,9 @@ return [
             'password' => $password
         ]);
     },
+    CommandMiddleware::class => function(ContainerInterface $container) {
+        $middleware = new CommandMiddleware($container, $container->get(ResponseFactoryInterface::class));
+        $middleware->displayTraceOnError($container->get('settings')->get('slim.displayerrordetails'));
+        return $middleware;
+    }
 ];

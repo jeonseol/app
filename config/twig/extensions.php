@@ -1,7 +1,7 @@
 <?php
 
 use App\Extensions\{
-    CSRF, Tests, TwigGlobalVars
+    CSRF, Tests
 };
 
 return [
