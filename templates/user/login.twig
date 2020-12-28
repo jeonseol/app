@@ -1,2 +1,49 @@
 {% extends isAjaxRequest != true ? "base.twig" : "ajax.twig" %}
 
+{% block body %}
+<div class="card border border-secondary">
+    <div class="card-header bg-blue text-white">
+        {{ title }}
+    </div>
+    <div class="card-body">
+
+        {% if flash %}<p class="alert alert-danger">{{ flash }}</p>{% endif %}
+        <form class="" 
+              method="POST" 
+              autocomplete="off"
+              action="{{ url_for("user.login") }}">
+            <div class="form-group">
+                <label for="email">Username</label>
+                <input type="text"
+                       id="username"
+                       name="username"
+                       placeholder="Your Name"
+                       value="{{ postdata.email }}"
+                       class="form-control">
+            </div>
+            <hr>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       placeholder="Your password"
+                       value=""
+                       class="form-control">
+            </div>
+            <hr>
+            <div class="form-group text-right">
+                {{ csrfinput() }}
+                <button type="submit" class="btn btn-primary">
+                    Sign In
+                </button>
+            </div>
+      </form>   
+
+    </div>
+    </div>
+    
+    
+    
+    
+{% endblock %}

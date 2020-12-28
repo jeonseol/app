@@ -153,7 +153,7 @@ class BaseController {
      * @return ResponseInterface
      */
     protected function redirectToLogin(): ResponseInterface {
-        return $this->redirectToRoute("auth.login");
+        return $this->redirectToRoute("user.login");
     }
 
     /**

@@ -27,16 +27,16 @@ return function(App $app) {
 
         $group
                 ->map(['GET', 'POST'], 'login', [Users::class, 'login'])
-                ->setName("auth.login")
+                ->setName("user.login")
                 ->add(SessionLogin::class);
 
         $group
                 ->get("logout", [Users::class, 'logout'])
-                ->setName("auth.logout");
+                ->setName("user.logout");
 
         $group
                 ->any("register", [Users::class, 'register'])
-                ->setName("auth.register");
+                ->setName("user.register");
     });
 };
 

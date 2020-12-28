@@ -46,7 +46,7 @@ class SlimErrorHandler extends ErrorHandler implements MiddlewareInterface {
                 ->createResponse($this->statusCode)
                 ->withHeader('Content-type', $this->contentType);
 
-        if (preg_match(('/html/'), $this->contentType)) {
+        if (preg_match(('/html/'), $this->contentType) > 0) {
             /** @var BaseController $controller */
             $controller = $this->container->get(BaseController::class);
             $controller->title = "Slim Application Error";
