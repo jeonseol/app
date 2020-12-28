@@ -124,8 +124,6 @@ class User extends Model {
 
     ////////////////////////////   Events   ////////////////////////////
 
-
-
     public function after_update() {
 
         if ($this->getGroups()->count() == 0) {
