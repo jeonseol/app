@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Manju\{
-    Helpers\Collection, ORM, ORM\Model
-};
+use Manju\Helpers\Collection;
 
 /**
  * @required (name,password)
@@ -18,7 +16,7 @@ use Manju\{
  * @property-read bool $admin
  * @property Collection $groups
  */
-class User extends Model {
+class User extends BaseModel {
 
     /**
      * @link https://stackoverflow.com/questions/48345922/reference-password-validation
@@ -42,43 +40,74 @@ class User extends Model {
 
     ////////////////////////////   G/S   ////////////////////////////
 
+    /**
+     * Checks ic current user has group admin
+     * @return bool
+     */
     public function getAdmin(): bool {
         $admin = Group::loadGroup('admin');
         return $admin->hasUser($this);
     }
 
+    /**
+     * Get Name
+     * @return string
+     */
     public function getName(): string {
         return $this->name;
     }
 
+    /**
+     * Get Email
+     * @return string
+     */
     public function getEmail(): string {
         return $this->email;
     }
 
-    public function setName(string $name) {
-        //if (self::hasName($name)) throw new ValidationError("Name $name already exists");
+    /**
+     * Set Name
+     * @param string $name
+     * @return User
+     */
+    public function setName(string $name): User {
         $this->name = $name;
         return $this;
     }
 
-    public function setEmail(string $email) {
+    /**
+     * Set Email
+     * @param string $email
+     * @return User
+     */
+    public function setEmail(string $email): User {
         $this->email = null;
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return $this;
-        //if (self::hasEmail($email)) throw new ValidationError("Email $email already exists");
         $this->email = filter_var($email, FILTER_SANITIZE_EMAIL);
         return $this;
     }
 
-    public function setPassword(string $password) {
+    /**
+     * Set Password
+     * @staticvar type $strong
+     * @param string $password
+     * @return \App\Models\User
+     */
+    public function setPassword(string $password): User {
         $this->password = null;
-        $config = ORM::getContainer()->get('settings');
-        $strong = $config->get('db.strongpasswords');
-        if ($strong) {
-            //check password
-            if (preg_match(self::PASSWORD_CHECK, $password)) {
-                $this->password = self::encodePassword($password);
-            }
-        } else $this->password = self::encodePassword($password);
+        static $strong;
+
+        if (!is_bool($strong)) {
+            $cfg = self::getSettings();
+            $strong = $cfg['db.strongpasswords'] === true;
+        }
+
+        if (
+                ($strong === true)
+                and preg_match(self::PASSWORD_CHECK, $password) > 0
+        ) {
+            $this->password = $this->encodePassword($password);
+        } elseif (!$strong) $this->password = $this->encodePassword($password);
 
         return $this;
     }
@@ -102,21 +131,33 @@ class User extends Model {
         return $this->getGroups()->hasItem($group);
     }
 
-    public function addGroup(Group $group) {
-
+    /**
+     * Add a Group to the user
+     * @param Group $group
+     * @return User
+     */
+    public function addGroup(Group $group): User {
         if (!$this->hasGroup($group)) $this->getGroups()->addItem($group);
-
-
         return $this;
     }
 
     ////////////////////////////   Utils   ////////////////////////////
 
+    /**
+     * Checks if password matches the current user password
+     * @param string $password
+     * @return bool
+     */
     public function checkPassword(string $password): bool {
         return password_verify($password, $this->password);
     }
 
-    public static function encodePassword(string $password): string {
+    /**
+     * Encode Password algorythm
+     * @param string $password
+     * @return string
+     */
+    protected function encodePassword(string $password): string {
         return password_hash($password, PASSWORD_BCRYPT, [
             "cost" => 11
         ]);
@@ -181,7 +222,8 @@ class User extends Model {
      * @param string $email
      * @return bool
      */
-    private static function hasEmail(string $email): bool {
+    public static function hasEmail(string $email): bool {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
         return self::countEntries('email = ?', [$email]) > 0;
     }
 
@@ -190,7 +232,7 @@ class User extends Model {
      * @param string $name
      * @return bool
      */
-    private static function hasName(string $name): bool {
+    public static function hasName(string $name): bool {
         return self::countEntries('name = ?', [$name]) > 0;
     }
 

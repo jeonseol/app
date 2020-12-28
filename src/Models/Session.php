@@ -4,22 +4,25 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Manju\{
-    Helpers\Collection, ORM, ORM\Model
-};
+use DateTime,
+    Manju\Helpers\Collection,
+    RedBeanPHP\Facade;
 
 /**
  * @required (expire,sid)
  * @property User $user
  * @property Collection $groups
  * @property-read string $sid
- * @property-read int $expire
+ * @property-read DateTime $expire
  */
-class Session extends Model {
+class Session extends BaseModel {
 
     const EXPIRE_AFTER = 60 * 60 * 24;
 
-    /** @var int */
+    /**
+     * @required
+     * @var DateTime
+     */
     protected $expire;
 
     /**
@@ -28,34 +31,79 @@ class Session extends Model {
      */
     protected $sid;
 
-    public function setUser(User $user) {
+    ////////////////////////////   Relations   ////////////////////////////
 
+    /**
+     * Set User for session
+     * @param User $user
+     * @return Session
+     */
+    public function setUser(User $user): Session {
         if ($id = $user->id) {
-            $settings = ORM::getContainer()->get('settings');
-            $expire = $settings['session.ttl'] ?? self::EXPIRE_AFTER;
             $this->setListOwner($user);
-            $this->expire = time() + $expire;
             $this->sid = sha1($user->name . time() . $id);
         }
+        return $this;
     }
 
+    /**
+     * Get User Assigned to Session
+     * @return User|null
+     */
     public function getUser(): ?User {
         return $this->getListOwner(User::class);
     }
 
+    /**
+     * Gae User Groups assigned to Session
+     * @return Collection|null
+     */
     public function getGroups(): ?Collection {
-
         if ($user = $this->getUser()) return $user->groups;
         return null;
     }
 
-    public function getExpire(): int {
+    ////////////////////////////   Getters/Setters   ////////////////////////////
+
+    /**
+     * Set Expire Date
+     * @staticvar Date $converter
+     * @param DateTime|int $expire
+     * @return Session
+     */
+    public function setExpire($expire): Session {
+        $this->expire = null;
+        if (is_int($expire)) $expire = new DateTime(Facade::isoDateTime($expire));
+        if ($expire instanceof DateTime) $this->expire = $expire;
+        return $this;
+    }
+
+    /** @return DateTime */
+    public function getExpire(): DateTime {
         return $this->expire;
     }
 
+    /** @return string */
     public function getSid(): string {
         return $this->sid;
     }
+
+    ////////////////////////////   Events   ////////////////////////////
+
+    /**
+     * Set expire before writing (if not set already)
+     * @staticvar type $ttl
+     */
+    public function update() {
+        static $ttl;
+        if ($ttl === null) {
+            $cfg = self::getSettings();
+            $ttl = $cfg['session.ttl'] ?? self::EXPIRE_AFTER;
+        }
+        if ($this->expire === null) $this->setExpire(time() + $ttl);
+    }
+
+    ////////////////////////////   Utils   ////////////////////////////
 
     /**
      * @param string $sid
@@ -72,8 +120,13 @@ class Session extends Model {
         return null;
     }
 
+    /**
+     * Removes Expired Sessions from Database
+     */
     public static function CleanUp() {
-        $now = time();
+
+        $now = Facade::isoDateTime();
+
         foreach (self::find(
                 'expire < ?',
                 [$now]

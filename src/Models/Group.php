@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Manju\{
-    Helpers\Collection, ORM\Model
-};
+use Manju\Helpers\Collection;
 
 /**
  * @required (name)
@@ -14,18 +12,37 @@ use Manju\{
  * @property string $name
  * @property Collection $users
  */
-class Group extends Model {
+class Group extends BaseModel {
 
     /**
      * @var string
+     * @required
      * @unique
      */
     protected $name;
 
+    /**
+     * @var string
+     * @required
+     * @unique
+     */
+    protected $label;
+
+    ////////////////////////////   Getters/Setters   ////////////////////////////
+
+    /**
+     * Get Group name
+     * @return string
+     */
     public function getName(): string {
         return $this->name;
     }
 
+    /**
+     * Set Group name
+     * @param string $name
+     * @return $this
+     */
     public function setName(string $name) {
         $this->name = $name;
         return $this;
