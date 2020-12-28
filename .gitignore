@@ -1,6 +1,7 @@
 .*
 !.ht*
 !.env.*
+!.phan
 !.git*
 !composer.json
 *.lock
