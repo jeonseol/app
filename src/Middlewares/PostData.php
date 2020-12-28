@@ -26,7 +26,7 @@ class PostData implements MiddlewareInterface {
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
 
-
+        $methods = ['POST'];
         $session = $this->session;
         foreach (['postdata', 'flashMessage', 'alertMessage', 'successMessage'] as $prop) {
 
@@ -35,22 +35,12 @@ class PostData implements MiddlewareInterface {
                 $session->removeItem($prop);
             }
         }
-
-
-
         if (
-                in_array($request->getMethod(), ['POST'])
-                and ($request->getAttribute('csrf_status', true) === false)
-        ) {
-            $this->session->setItem('alert', 'CSRF Verification Failed.');
-        }
-
-        if (
-                in_array($request->getMethod(), ['POST'])
-                and ($request->getAttribute('csrf_status', true) !== false)
+                in_array($request->getMethod(), $methods)
                 and ($request instanceof ServerRequest)
         ) {
-            $this->session->setItem('postdata', $request->getParams());
+            if ($request->getAttribute('csrf_status', true) !== false) $session->setItem('postdata', $request->getParams());
+            else $session->setItem('alertMessage', 'CSRF Verification Failed.');
         }
 
         return $handler->handle($request);

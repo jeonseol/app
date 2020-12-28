@@ -120,10 +120,11 @@ class BaseController {
     /**
      * Create a new response.
      *
-     * @return ResponseInterface The response
+     * @param int $code
+     * @return ResponseInterface
      */
-    public function createResponse(): ResponseInterface {
-        return $this->responseFactory->createResponse()->withHeader('Content-Type', 'text/html; charset=utf-8');
+    public function createResponse(int $code = 200): ResponseInterface {
+        return $this->responseFactory->createResponse($code)->withHeader('Content-Type', 'text/html; charset=utf-8');
     }
 
     /**
@@ -215,8 +216,28 @@ class BaseController {
      * @param string $message
      * @return static
      */
-    protected function flash(string $message): self {
-        $this->get(SessionStorage::class)->setItem('flash', $message);
+    protected function setFlashMessage(string $message): self {
+        $this->get(SessionStorage::class)->setItem('flashMessage', $message);
+        return $this;
+    }
+
+    /**
+     * Creates an Alert Message
+     * @param string $message
+     * @return static
+     */
+    protected function setAlertMessage(string $message): self {
+        $this->get(SessionStorage::class)->setItem('alertMessage', $message);
+        return $this;
+    }
+
+    /**
+     * Creates an Alert Message
+     * @param string $message
+     * @return static
+     */
+    protected function setSuccessMessage(string $message): self {
+        $this->get(SessionStorage::class)->setItem('successMessage', $message);
         return $this;
     }
 

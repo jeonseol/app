@@ -35,7 +35,7 @@ return function(App $app) {
                 ->setName("user.logout");
 
         $group
-                ->any("register", [Users::class, 'register'])
+                ->map(['GET', 'POST'], 'register', [Users::class, 'register'])
                 ->setName("user.register");
     });
 };

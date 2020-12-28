@@ -29,6 +29,7 @@ class SessionLoader implements MiddlewareInterface {
         if ($sid = $session->getItem("sid")) {
             if ($usersession = Session::getSession($sid)) {
                 $globals = $this->container->get('globals');
+                $globals['session'] = $usersession;
                 $globals['user'] = $usersession->user;
             } else $session->removeItem("sid");
         }
