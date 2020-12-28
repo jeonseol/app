@@ -2,7 +2,12 @@
 
 use Adbar\Dot,
     App\Middlewares\SlimErrorHandler,
-    Manju\Connection;
+    DI\Bridge\Slim\ControllerInvoker;
+use Invoker\{
+    Invoker, ParameterResolver\AssociativeArrayResolver, ParameterResolver\Container\TypeHintContainerResolver,
+    ParameterResolver\DefaultValueResolver, ParameterResolver\ResolverChain
+};
+use Manju\Connection;
 use Monolog\{
     Handler\FilterHandler, Handler\StreamHandler, Logger, Processor\UidProcessor
 };
@@ -32,7 +37,22 @@ return [
     },
     App::class => function (ContainerInterface $container) {
         AppFactory::setContainer($container);
-        return AppFactory::create();
+        $app = AppFactory::create();
+
+        $invoker = new Invoker(
+                new ResolverChain([
+                    // Inject parameters by name first
+                    new AssociativeArrayResolver(),
+                    // Then inject services by type-hints for those that weren't resolved
+                    new TypeHintContainerResolver($container),
+                    // Then fall back on parameters default values for optional route parameters
+                    new DefaultValueResolver(),
+                        ]),
+                $container
+        );
+        $controllerInvoker = new ControllerInvoker($invoker);
+        $app->getRouteCollector()->setDefaultInvocationStrategy($controllerInvoker);
+        return $app;
     },
     ResponseFactoryInterface::class => function (ContainerInterface $container) {
         return $container->get(App::class)->getResponseFactory();
@@ -41,11 +61,11 @@ return [
         return $container->get(App::class)->getRouteCollector()->getRouteParser();
     },
     CallableResolverInterface::class => function (ContainerInterface $container) {
+
         return $container->get(App::class)->getCallableResolver();
     },
     ErrorHandlerInterface::class => function(ContainerInterface $container) {
-
-        return new SlimErrorHandler($container->get(CallableResolverInterface::class), $container->get(ResponseFactoryInterface::class), $container->get(LoggerInterface::class), $container);
+        return $container->get(SlimErrorHandler::class);
     },
     Twig::class => function (ContainerInterface $container) {
         $settings = $container->get('settings');

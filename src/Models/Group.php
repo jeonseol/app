@@ -38,7 +38,7 @@ class Group extends Model {
      * @return Collection
      */
     public function getUsers(): Collection {
-        return $this->getSharedList(Users::class);
+        return $this->getSharedList(User::class);
     }
 
     /**

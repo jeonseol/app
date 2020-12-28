@@ -62,10 +62,13 @@ class Session extends Model {
      * @return Session|null
      */
     public static function getSession(string $sid): ?Session {
-        if ($session = self::findOne(
+        if (
+                $session = self::findOne(
                         'sid = ?',
                         [$sid]
-                ) and $session->user) return $session;
+                )
+                and ($session->user instanceof User)
+        ) return $session;
         return null;
     }
 

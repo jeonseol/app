@@ -5,7 +5,8 @@ declare(strict_types=1);
 use App\Middlewares\{
     PostData, SessionLoader
 };
-use NGSOFT\Commands\CommandMiddleware;
+use DI\Container,
+    NGSOFT\Commands\CommandMiddleware;
 use Psr\{
     Container\ContainerInterface, Http\Message\ResponseFactoryInterface, Http\Server\RequestHandlerInterface
 };
@@ -15,6 +16,8 @@ use Slim\{
     Middleware\ErrorMiddleware, Views\Twig, Views\TwigMiddleware
 };
 
+/** @var App $app */
+/** @var Container $container */
 $app->addBodyParsingMiddleware();
 
 

@@ -18,20 +18,26 @@ class SlimErrorHandler extends ErrorHandler {
     protected $container;
 
     public function __construct(
-            CallableResolverInterface $callableResolver,
-            ResponseFactoryInterface $responseFactory,
-            LoggerInterface $logger,
             ContainerInterface $container
     ) {
         $this->container = $container;
-        parent::__construct($callableResolver, $responseFactory, $logger);
+        parent::__construct(
+                $container->get(CallableResolverInterface::class),
+                $container->get(ResponseFactoryInterface::class),
+                $container->get(LoggerInterface::class)
+        );
     }
 
     protected function respond(): ResponseInterface {
 
+
+
         if (preg_match(('/html/'), $this->contentType)) {
-            $response = $this->responseFactory->createResponse($this->statusCode);
-            $response = $response->withHeader('Content-type', $this->contentType);
+            $response = $this->responseFactory
+                    ->createResponse($this->statusCode)
+                    ->withHeader('Content-type', $this->contentType);
+
+
 
             $controller = $this->container->get(BaseController::class);
 
@@ -44,8 +50,9 @@ class SlimErrorHandler extends ErrorHandler {
                 'line' => $this->exception->getLine(),
                 'trace' => $this->exception->getTraceAsString(),
             ];
-            if ($this->exception instanceof HttpNotFoundException) $response = $controller->render("404.twig", $data);
-            else $response = $controller->render("slimerror.twig", $data);
+            if ($this->exception instanceof HttpNotFoundException) {
+                $response = $controller->render("404.twig", $data, $response->withStatus(404));
+            } else $response = $controller->render("slimerror.twig", $data, $response->withStatus(500));
         } else $response = parent::respond();
 
 

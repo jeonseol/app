@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-use DI\ContainerBuilder,
-    Dotenv\Dotenv,
+use DI\{
+    Container, ContainerBuilder
+};
+use Dotenv\Dotenv,
     Slim\App;
 
 (Dotenv::createUnsafeImmutable(dirname(__DIR__)))->load();
@@ -15,9 +17,9 @@ $containerBuilder->useAnnotations(true);
 $containerBuilder->addDefinitions(__DIR__ . '/defaults/definitions.php');
 if (file_exists(__DIR__ . '/definitions.php')) $containerBuilder->addDefinitions(__DIR__ . '/definitions.php');
 $container = $containerBuilder->build();
-
+/** @var Container $container */
 $app = $container->get(App::class);
-
+/** @var App $app */
 if (php_sapi_name() !== "cli") {
     session_set_cookie_params(["SameSite" => "Strict"]); //none, lax, strict
     session_set_cookie_params(["Secure" => "true"]); //false, true
