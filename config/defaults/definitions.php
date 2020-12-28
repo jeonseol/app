@@ -64,6 +64,8 @@ return [
         return $result;
     },
     App::class => function (ContainerInterface $container) {
+
+        //php-di bridge breaks middlewares, so manually add the ControllerInvoker
         AppFactory::setContainer($container);
         $app = AppFactory::create();
 
@@ -91,6 +93,7 @@ return [
     CallableResolverInterface::class => function (App $app) {
         return $app->getCallableResolver();
     },
+    //Custom Error Handler
     ErrorHandlerInterface::class => function(ContainerInterface $container, App $app) {
         $handler = $container->get(SlimErrorHandler::class);
         $app->add($handler);

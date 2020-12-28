@@ -23,6 +23,7 @@ return function(App $app) {
         return $controller->renderTextMessage('Welcome to your Slim Project', $response);
     })->setName("home");
 
+    // php-di magics
     $app->group('/user/', function (RouteCollectorProxy $group) {
 
         $group
