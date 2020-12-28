@@ -127,11 +127,15 @@ class Session extends BaseModel {
 
         $now = Facade::isoDateTime();
 
-        foreach (self::find(
-                'expire < ?',
-                [$now]
-        ) as $session) {
-            $session->trash();
+        if (
+                $expiredSessions = self::find(
+                        'expire < ?',
+                        [$now]
+                )
+        ) {
+            foreach ($expiredSessions as $session) {
+                $session->trash();
+            }
         }
     }
 

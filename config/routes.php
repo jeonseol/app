@@ -3,12 +3,17 @@
 use App\{
     Controllers\BaseController, Middlewares\SessionLogin
 };
+use Psr\Http\Message\ResponseInterface;
 use Slim\{
     App, Http\Response, Http\ServerRequest as Request, Routing\RouteCollectorProxy
 };
 
 return function(App $app) {
 
+    // 403 access
+    $app->any('/assets[/{opt:.*}]', function(Response $response) {
+        return $response->withStatus(403);
+    });
 
     $app->any('/', function(Response $response) {
 
@@ -18,6 +23,12 @@ return function(App $app) {
         $controller->title = "Your Slim 4 Project";
         return $controller->renderTextMessage('Welcome to your Slim Project', $response);
     })->setName("home");
+
+    $app->any('/t', function(Request $request, Response $response) {
+
+        //throw new HttpForbiddenException($request);
+        return $response->withStatus(400);
+    });
 
     $app->group('/user/', function (RouteCollectorProxy $group) {
 

@@ -92,8 +92,10 @@ return [
 
         return $container->get(App::class)->getCallableResolver();
     },
-    ErrorHandlerInterface::class => function(ContainerInterface $container) {
-        return $container->get(SlimErrorHandler::class);
+    ErrorHandlerInterface::class => function(ContainerInterface $container, App $app) {
+        $handler = $container->get(SlimErrorHandler::class);
+        $app->add($handler);
+        return $handler;
     },
     TwigMiddleware::class => function(ContainerInterface $container, App $app, Twig $twig) {
 

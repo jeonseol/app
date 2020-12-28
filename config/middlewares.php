@@ -10,7 +10,10 @@ use DI\Container,
     Psr\Http\Server\RequestHandlerInterface,
     Selective\BasePath\BasePathMiddleware;
 use Slim\{
-    App, Csrf\Guard, Http\ServerRequest, Interfaces\ErrorHandlerInterface, Middleware\ErrorMiddleware, Views\TwigMiddleware
+    App, Csrf\Guard, Exception\HttpBadRequestException, Exception\HttpForbiddenException, Exception\HttpInternalServerErrorException,
+    Exception\HttpMethodNotAllowedException, Exception\HttpNotFoundException, Exception\HttpNotImplementedException,
+    Exception\HttpUnauthorizedException, Http\ServerRequest, Interfaces\ErrorHandlerInterface, Middleware\ContentLengthMiddleware,
+    Middleware\ErrorMiddleware, Views\TwigMiddleware
 };
 
 return function(App $app) {
@@ -18,10 +21,11 @@ return function(App $app) {
     $container = $app->getContainer();
 
 
-
+    $app->add(ContentLengthMiddleware::class);
     $app->addBodyParsingMiddleware();
 
     $app->addRoutingMiddleware();
+
 
     $app->add(SessionLoader::class);
 
@@ -68,6 +72,7 @@ return function(App $app) {
     );
     $errorMiddleware->setDefaultErrorHandler($container->get(ErrorHandlerInterface::class));
     $app->add($errorMiddleware);
+
 
 //twig Extensions
     $app->add(TwigMiddleware::class);
