@@ -1,9 +1,8 @@
 <?php
 
 use App\{
-    Controllers\BaseController, Middlewares\SessionLogin
+    Controllers\BaseController, Controllers\Users, Middlewares\SessionLogin
 };
-use Psr\Http\Message\ResponseInterface;
 use Slim\{
     App, Http\Response, Http\ServerRequest as Request, Routing\RouteCollectorProxy
 };
@@ -24,28 +23,20 @@ return function(App $app) {
         return $controller->renderTextMessage('Welcome to your Slim Project', $response);
     })->setName("home");
 
-    $app->any('/t', function(Request $request, Response $response) {
-
-        //throw new HttpForbiddenException($request);
-        return $response->withStatus(400);
-    });
-
     $app->group('/user/', function (RouteCollectorProxy $group) {
 
-        $group->any("login.html", function (Request $request, Response $response) {
-            $controller = new Auth($container, $request, $response);
-            return $controller->login();
-        })->setName("auth.login")->add(SessionLogin::class);
+        $group
+                ->map(['GET', 'POST'], 'login', [Users::class, 'login'])
+                ->setName("auth.login")
+                ->add(SessionLogin::class);
 
-        $group->any("logout.html", function (Request $request, Response $response) {
-            $controller = new Auth($container, $request, $response);
-            return $controller->logout();
-        })->setName("auth.logout");
+        $group
+                ->get("logout", [Users::class, 'logout'])
+                ->setName("auth.logout");
 
-        $group->any("register.html", function (Request $request, Response $response) {
-            $controller = new Auth($container, $request, $response);
-            return $controller->register();
-        })->setName("auth.register");
+        $group
+                ->any("register", [Users::class, 'register'])
+                ->setName("auth.register");
     });
 };
 

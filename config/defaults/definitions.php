@@ -82,15 +82,14 @@ return [
         $app->getRouteCollector()->setDefaultInvocationStrategy($controllerInvoker);
         return $app;
     },
-    ResponseFactoryInterface::class => function (ContainerInterface $container) {
-        return $container->get(App::class)->getResponseFactory();
+    ResponseFactoryInterface::class => function (App $app) {
+        return $app->getResponseFactory();
     },
-    RouteParserInterface::class => function (ContainerInterface $container) {
-        return $container->get(App::class)->getRouteCollector()->getRouteParser();
+    RouteParserInterface::class => function (App $app) {
+        return $app->getRouteCollector()->getRouteParser();
     },
-    CallableResolverInterface::class => function (ContainerInterface $container) {
-
-        return $container->get(App::class)->getCallableResolver();
+    CallableResolverInterface::class => function (App $app) {
+        return $app->getCallableResolver();
     },
     ErrorHandlerInterface::class => function(ContainerInterface $container, App $app) {
         $handler = $container->get(SlimErrorHandler::class);
@@ -116,8 +115,7 @@ return [
         return Twig::create($settings ['twig.paths'], $settings ['twig.options']);
     },
     "view" => get(Twig::class),
-    Guard::class => function (ContainerInterface $container) {
-        $responseFactory = $container->get(App::class)->getResponseFactory();
+    Guard::class => function (ResponseFactoryInterface $responseFactory) {
         $guard = new Guard($responseFactory);
 
         $guard->setFailureHandler(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
@@ -127,37 +125,35 @@ return [
         return $guard;
     },
     "csrf" => get(Guard::class),
-    BasePathMiddleware::class => function (ContainerInterface $container) {
-        $app = $container->get(App::class);
-        $sapi = php_sapi_name();
-        return new BasePathMiddleware($app, $sapi);
+    BasePathMiddleware::class => function (App $app) {
+        return new BasePathMiddleware($app, php_sapi_name());
     },
     LoggerInterface::class => function(ContainerInterface $container) {
 
         $settings = $container->get('settings');
-        $path = $settings->get('paths.logs');
+        $path = $settings['paths.logs'];
 
         $handlers = [
             new FilterHandler(new StreamHandler($path . "/app.log", Logger::DEBUG), Logger::DEBUG, 399),
             new StreamHandler($path . "/error.log", Logger::ERROR),
         ];
         $processor = new UidProcessor();
-        return new Logger($settings->get('app.title'), $handlers, [$processor]);
+        return new Logger($settings['app.title'], $handlers, [$processor]);
     },
     CacheItemPoolInterface::class => function (ContainerInterface $container) {
         $settings = $container->get('settings');
-        return new PHPCache($settings->get('cache.path'), $settings->get('cache.ttl'), $settings->get('cache.namespace'));
+        return new PHPCache($settings['cache.path'], $settings['cache.ttl'], $settings['cache.namespace']);
     },
     Connection::class => function(ContainerInterface $container) {
 
         $settings = $container->get('settings');
-        $name = $settings->get('db.name');
-        $host = $settings->get('db.host');
-        $port = $settings->get('db.port');
-        $dbname = $settings->get('db.dbname');
-        $user = $settings->get('db.username');
-        $password = $settings->get('db.password');
-        $charset = $settings->get('db.charset');
+        $name = $settings['db.name'];
+        $host = $settings['db.host'];
+        $port = $settings['db.port'];
+        $dbname = $settings['db.dbname'];
+        $user = $settings['db.username'];
+        $password = $settings['db.password'];
+        $charset = $settings['db.charset'];
 
         $dsn = sprintf('mysql:host=%s;dbname=%s;charset=%s;port=%s', $host, $dbname, $charset, $port);
 
@@ -168,9 +164,9 @@ return [
             'password' => $password
         ]);
     },
-    CommandMiddleware::class => function(ContainerInterface $container) {
-        $middleware = new CommandMiddleware($container, $container->get(ResponseFactoryInterface::class));
-        $middleware->displayTraceOnError($container->get('settings')->get('slim.displayerrordetails'));
+    CommandMiddleware::class => function(ContainerInterface $container, ResponseFactoryInterface $responseFactory) {
+        $middleware = new CommandMiddleware($container, $responseFactory);
+        $middleware->displayTraceOnError($container->get('settings')['slim.displayerrordetails']);
         return $middleware;
     }
 ];

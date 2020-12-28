@@ -24,7 +24,7 @@ if (php_sapi_name() !== "cli") {
     //session_set_cookie_params(["HttpOnly" => "true"]); //false, true
     session_start();
 }
-date_default_timezone_set($container->get('settings')->get('app.tz'));
+date_default_timezone_set($container->get('settings')['app.tz']);
 ini_set('default_mimetype', '');
 
 (require_once __DIR__ . '/orm.php')($container);

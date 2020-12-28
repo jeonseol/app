@@ -98,7 +98,6 @@ class BaseController {
      * response to the client.
      *
      * @param mixed $data The data
-     * @param int $options Json encoding options
      * @param ResponseInterface|null $response
      *
      * @throws JsonException
@@ -107,9 +106,9 @@ class BaseController {
      */
     public function renderJson(
             $data = null,
-            int $options = 0,
             ?ResponseInterface $response = null
     ): ResponseInterface {
+        $options = 0;
         $response = $response ?: $this->createResponse();
         $response = $response->withHeader('Content-Type', 'application/json');
         $response->getBody()->write((string) json_encode($data, JSON_THROW_ON_ERROR | $options));

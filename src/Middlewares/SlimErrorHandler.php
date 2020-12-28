@@ -10,9 +10,10 @@ use Psr\{
     Http\Server\RequestHandlerInterface, Log\LoggerInterface
 };
 use Slim\{
-    App, Exception\HttpBadRequestException, Exception\HttpForbiddenException, Exception\HttpInternalServerErrorException,
-    Exception\HttpMethodNotAllowedException, Exception\HttpNotFoundException, Exception\HttpNotImplementedException,
-    Exception\HttpSpecializedException, Exception\HttpUnauthorizedException, Handlers\ErrorHandler
+    App, Exception\HttpBadRequestException, Exception\HttpException, Exception\HttpForbiddenException,
+    Exception\HttpInternalServerErrorException, Exception\HttpMethodNotAllowedException, Exception\HttpNotFoundException,
+    Exception\HttpNotImplementedException, Exception\HttpSpecializedException, Exception\HttpUnauthorizedException,
+    Handlers\ErrorHandler
 };
 
 class SlimErrorHandler extends ErrorHandler implements MiddlewareInterface {
@@ -39,14 +40,15 @@ class SlimErrorHandler extends ErrorHandler implements MiddlewareInterface {
 
     protected function respond(): ResponseInterface {
 
-        if (preg_match(('/html/'), $this->contentType)) {
-            $response = $this->responseFactory
-                    ->createResponse($this->statusCode)
-                    ->withHeader('Content-type', $this->contentType);
+        if (empty($this->contentType)) $this->contentType = $this->defaultErrorRendererContentType;
+        $exception = $this->exception;
+        $response = $this->responseFactory
+                ->createResponse($this->statusCode)
+                ->withHeader('Content-type', $this->contentType);
 
+        if (preg_match(('/html/'), $this->contentType)) {
             /** @var BaseController $controller */
             $controller = $this->container->get(BaseController::class);
-            $exception = $this->exception;
             $templates = $this->templates;
             $template = "slimerror.twig";
 
@@ -88,7 +90,9 @@ class SlimErrorHandler extends ErrorHandler implements MiddlewareInterface {
         $code = $response->getStatusCode();
 
         $len = $response->getBody()->getSize();
+
         if ($len === 0) {
+
             $classname = null;
             switch ($code) {
                 case 500:
@@ -115,6 +119,10 @@ class SlimErrorHandler extends ErrorHandler implements MiddlewareInterface {
             }
 
             if (is_string($classname)) {
+                $contentType = $this->determineContentType($request);
+                if (empty($contentType)) {
+                    $request = $request->withHeader('Accept', $response->getHeader('Content-Type') ?: $this->defaultErrorRendererContentType);
+                }
                 throw new $classname($request);
             }
         }

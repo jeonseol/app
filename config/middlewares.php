@@ -37,20 +37,7 @@ return function(App $app) {
 
     $app->add(BasePathMiddleware::class);
 
-    $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
 
-
-
-        /* if (User::countEntries() == 0) {
-          $user = User::create();
-          $user->name = 'admin';
-          // $user->name = 12354;
-          $user->password = $container->get('settings')->get('db.strongpasswords') ? 'Passw0rd' : 'admin';
-          $user->save();
-          } */
-
-        return $handler->handle($request);
-    });
 
 
     /**
@@ -66,9 +53,9 @@ return function(App $app) {
     $errorMiddleware = new ErrorMiddleware(
             $app->getCallableResolver(),
             $app->getResponseFactory(),
-            $container->get("settings")->get('slim.displayerrordetails'),
-            $container->get("settings")->get('slim.logerrors'),
-            $container->get("settings")->get('slim.logerrordetails')
+            $container->get("settings")['slim.displayerrordetails'],
+            $container->get("settings")['slim.logerrors'],
+            $container->get("settings")['slim.logerrordetails']
     );
     $errorMiddleware->setDefaultErrorHandler($container->get(ErrorHandlerInterface::class));
     $app->add($errorMiddleware);
