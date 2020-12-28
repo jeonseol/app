@@ -17,7 +17,8 @@ class SessionLogin extends SessionLoader {
 
         if ($request->getAttribute('csrf_status') !== false) {
 
-            $session = $this->container->get(SessionStorage::class);
+            $session = $this->sessionStorage;
+
             if ($session->getItem("sid") === null and $request->getMethod() === "POST") {
                 if (
                         $request instanceof ServerRequest

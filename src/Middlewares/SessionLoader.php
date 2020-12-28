@@ -14,13 +14,17 @@ class SessionLoader implements MiddlewareInterface {
     /** @var ContainerInterface */
     protected $container;
 
-    public function __construct(ContainerInterface $container) {
+    /** @var SessionStorage */
+    protected $sessionStorage;
+
+    public function __construct(ContainerInterface $container, SessionStorage $sessionStorage) {
         $this->container = $container;
+        $this->sessionStorage = $sessionStorage;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
-        $session = $this->container->get(SessionStorage::class);
 
+        $session = $this->sessionStorage;
         Session::CleanUp();
         if ($sid = $session->getItem("sid")) {
             if ($usersession = Session::getSession($sid)) {
