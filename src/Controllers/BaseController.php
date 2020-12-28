@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Models\User,
-    JsonException,
-    NGSOFT\Tools\Objects\stdObject;
+    JsonException;
+use NGSOFT\Tools\Objects\{
+    SessionStorage, stdObject
+};
 use Psr\{
     Container\ContainerInterface, Http\Message\ResponseFactoryInterface, Http\Message\ResponseInterface,
     Http\Message\ServerRequestInterface
@@ -42,7 +44,7 @@ class BaseController {
 
     /** @return array */
     private function getGlobals(): array {
-        return $this->get('globals');
+        return $this->get('globals')->toArray();
     }
 
     /** @return stdObject */
@@ -204,6 +206,18 @@ class BaseController {
     /** {@inheritdoc} */
     public function __unset($prop) {
         $this->getStorage()->__unset($prop);
+    }
+
+    ////////////////////////////   Utils   ////////////////////////////
+
+    /**
+     * Creates a Flash Message
+     * @param string $message
+     * @return static
+     */
+    protected function flash(string $message): self {
+        $this->get(SessionStorage::class)->setItem('flash', $message);
+        return $this;
     }
 
 }

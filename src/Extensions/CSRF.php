@@ -40,12 +40,8 @@ class CSRF extends AbstractExtension implements GlobalsInterface {
 
         return [
             'csrf' => [
-                'keys' => [
-                    'name' => $csrfNameKey,
-                    'value' => $csrfValueKey
-                ],
-                'name' => $csrfName,
-                'value' => $csrfValue
+                $csrfNameKey => $csrfName,
+                $csrfValueKey => $csrfValue
             ]
         ];
     }

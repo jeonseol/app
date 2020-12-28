@@ -27,14 +27,27 @@ class PostData implements MiddlewareInterface {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
 
 
-        if ($postdata = $this->session->getItem('postdata')) {
-            $this->globals['postdata'] = $postdata;
-            $this->session->removeItem('postdata');
+        $session = $this->session;
+        foreach (['postdata', 'flashMessage', 'alertMessage', 'successMessage'] as $prop) {
+
+            if ($data = $session->getItem($prop)) {
+                $this->globals[$prop] = $data;
+                $session->removeItem($prop);
+            }
+        }
+
+
+
+        if (
+                in_array($request->getMethod(), ['POST'])
+                and ($request->getAttribute('csrf_status', true) === false)
+        ) {
+            $this->session->setItem('alert', 'CSRF Verification Failed.');
         }
 
         if (
                 in_array($request->getMethod(), ['POST'])
-                and ($request->getAttribute('csrf_status') !== false)
+                and ($request->getAttribute('csrf_status', true) !== false)
                 and ($request instanceof ServerRequest)
         ) {
             $this->session->setItem('postdata', $request->getParams());

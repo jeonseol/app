@@ -6,8 +6,7 @@
         {{ title }}
     </div>
     <div class="card-body">
-
-        {% if flash %}<p class="alert alert-danger">{{ flash }}</p>{% endif %}
+        {{ flash() }}
         <form class="" 
               method="POST" 
               autocomplete="off"

@@ -1,7 +1,7 @@
 <?php
 
 use App\Extensions\{
-    CSRF, Tests
+    CSRF, Tests, Utils
 };
 use DI\Container;
 
@@ -13,6 +13,7 @@ return function (Container $container) {
     return [
         Tests::class,
         CSRF::class,
+        Utils::class,
     ];
 };
 

@@ -19,23 +19,14 @@ class Users extends BaseController {
         $this->title = "User Connection";
 
         if ($request->getMethod() == "POST") {
-            if ($request->getAttribute("csrf_status", true)) {
-                $flash = "CSRF Verification Failed";
-            }
 
-            $params = $request->getParams();
+
+            if (!$request->getAttribute("csrf_status", true)) {
+                $this->flash('CSRF Verification Failed.');
+            } else $this->flash('Invalid Credentials.');
+
+            return $this->redirectToLogin();
         }
-
-
-
-
-        // $request = $request->withHeader('Accept', 'application/json');
-
-
-
-
-
-
         return $this->render('user/login.twig');
     }
 

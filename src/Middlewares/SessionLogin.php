@@ -27,6 +27,7 @@ class SessionLogin extends SessionLoader {
                     $email = $request->getParam("email");
                     $name = $request->getParam("username");
                     $pass = $request->getParam("password");
+
                     if ($request->getParam("confirm") === null) {
                         if (
                                 isset($email)

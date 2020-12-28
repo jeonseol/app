@@ -12,7 +12,7 @@ use Monolog\{
     Handler\FilterHandler, Handler\StreamHandler, Logger, Processor\UidProcessor
 };
 use NGSOFT\{
-    Commands\CommandMiddleware, Tools\Cache\PHPCache
+    Commands\CommandMiddleware, Tools\Cache\PHPCache, Tools\Objects\stdObject
 };
 use Psr\{
     Cache\CacheItemPoolInterface, Container\ContainerInterface, Http\Message\ResponseFactoryInterface,
@@ -37,8 +37,8 @@ return [
     //globals set on all Controllers extending BaseController
     "globals" => function(ContainerInterface $container) {
         $globals = (require dirname(__DIR__) . '/globals.php')($container);
-        if (is_array($globals)) return $globals;
-        return [];
+        if (!is_array($globals)) $globals = [];
+        return stdObject::from($globals);
     },
     //twig extensions
     "extensions" => function(ContainerInterface $container) {
