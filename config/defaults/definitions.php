@@ -12,7 +12,7 @@ use Monolog\{
     Handler\FilterHandler, Handler\StreamHandler, Logger, Processor\UidProcessor
 };
 use NGSOFT\{
-    Commands\CommandMiddleware, Tools\Cache\PHPCache, Tools\Objects\stdObject
+    Commands\CommandMiddleware, Tools\Cache\PHPCache
 };
 use Psr\{
     Cache\CacheItemPoolInterface, Container\ContainerInterface, Http\Message\ResponseFactoryInterface,
@@ -21,19 +21,47 @@ use Psr\{
 use Selective\BasePath\BasePathMiddleware;
 use Slim\{
     App, Csrf\Guard, Factory\AppFactory, Interfaces\CallableResolverInterface, Interfaces\ErrorHandlerInterface,
-    Interfaces\RouteParserInterface, Views\Twig
+    Interfaces\RouteParserInterface, Views\Twig, Views\TwigMiddleware
 };
+use Twig\Extension\ExtensionInterface;
 use function DI\get;
 
 return [
     //cli commands
     "commands" => [],
+    //site settings
     "settings" => function() {
         $settings = require dirname(__DIR__) . '/settings.php';
         return new Dot($settings);
     },
-    "globals" => function() {
-        return stdObject::create();
+    //globals set on all Controllers extending BaseController
+    "globals" => function(ContainerInterface $container) {
+        $globals = (require dirname(__DIR__) . '/globals.php')($container);
+        if (is_array($globals)) return $globals;
+        return [];
+    },
+    //twig extensions
+    "extensions" => function(ContainerInterface $container) {
+        $extensions = (require dirname(__DIR__) . '/extensions.php')($container);
+        $result = [];
+        if (is_array($extensions)) {
+            foreach ($extensions as $extension) {
+
+                if (
+                        is_object($extension)
+                        and ($extension instanceof ExtensionInterface)
+                ) {
+                    $result[] = $extension;
+                } elseif (
+                        is_string($extension)
+                        and class_exists($extension)
+                        and in_array(ExtensionInterface::class, class_implements($extension))
+                ) {
+                    $result[] = $container->get($extension);
+                }
+            }
+        }
+        return $result;
     },
     App::class => function (ContainerInterface $container) {
         AppFactory::setContainer($container);
@@ -66,6 +94,20 @@ return [
     },
     ErrorHandlerInterface::class => function(ContainerInterface $container) {
         return $container->get(SlimErrorHandler::class);
+    },
+    TwigMiddleware::class => function(ContainerInterface $container, App $app, Twig $twig) {
+
+        $extensions = $container->get('extensions');
+
+        foreach ($extensions as $extension) {
+            $twig->addExtension($extension);
+        }
+
+        return new TwigMiddleware(
+                $twig,
+                $app->getRouteCollector()->getRouteParser(),
+                $app->getBasePath()
+        );
     },
     Twig::class => function (ContainerInterface $container) {
         $settings = $container->get('settings');

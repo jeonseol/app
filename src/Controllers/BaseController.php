@@ -12,7 +12,7 @@ use Psr\{
     Http\Message\ServerRequestInterface
 };
 use Slim\{
-    App, Factory\ServerRequestCreatorFactory, Http\Response, Http\ServerRequest, Views\Twig
+    App, Factory\ServerRequestCreatorFactory, Views\Twig
 };
 
 class BaseController {
@@ -36,13 +36,13 @@ class BaseController {
     protected $responseFactory;
 
     /** @var stdObject */
-    private $storage;
+    protected $storage;
 
     ////////////////////////////   DATA   ////////////////////////////
 
     /** @return array */
     private function getGlobals(): array {
-        return $this->container->get('globals')->toArray();
+        return $this->get('globals');
     }
 
     /** @return stdObject */
@@ -194,7 +194,7 @@ class BaseController {
 
     /** {@inheritdoc} */
     public function __isset($prop) {
-        return $this->getData()->__isset($prop);
+        return $this->getStorage()->__isset($prop);
     }
 
     /** {@inheritdoc} */

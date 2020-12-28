@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use DI\{
-    Container, ContainerBuilder
-};
-use Dotenv\Dotenv,
+use DI\ContainerBuilder,
+    Dotenv\Dotenv,
     Slim\App;
 
 (Dotenv::createUnsafeImmutable(dirname(__DIR__)))->load();
@@ -17,9 +15,9 @@ $containerBuilder->useAnnotations(true);
 $containerBuilder->addDefinitions(__DIR__ . '/defaults/definitions.php');
 if (file_exists(__DIR__ . '/definitions.php')) $containerBuilder->addDefinitions(__DIR__ . '/definitions.php');
 $container = $containerBuilder->build();
-/** @var Container $container */
+/** @var \DI\Container $container */
 $app = $container->get(App::class);
-/** @var App $app */
+/** @var \Slim\App $app */
 if (php_sapi_name() !== "cli") {
     session_set_cookie_params(["SameSite" => "Strict"]); //none, lax, strict
     session_set_cookie_params(["Secure" => "true"]); //false, true
@@ -28,10 +26,10 @@ if (php_sapi_name() !== "cli") {
 }
 date_default_timezone_set($container->get('settings')->get('app.tz'));
 ini_set('default_mimetype', '');
-require_once __DIR__ . '/orm.php';
 
-require_once __DIR__ . '/middlewares.php';
-require_once __DIR__ . '/routes.php';
+(require_once __DIR__ . '/orm.php')($container);
+(require_once __DIR__ . '/middlewares.php')($app);
+(require_once __DIR__ . '/routes.php')($app);
 
 
 return $app;

@@ -6,106 +6,74 @@ use App\Middlewares\{
     PostData, SessionLoader
 };
 use DI\Container,
-    NGSOFT\Commands\CommandMiddleware;
-use Psr\{
-    Container\ContainerInterface, Http\Message\ResponseFactoryInterface, Http\Server\RequestHandlerInterface
-};
-use Selective\BasePath\BasePathMiddleware;
+    NGSOFT\Commands\CommandMiddleware,
+    Psr\Http\Server\RequestHandlerInterface,
+    Selective\BasePath\BasePathMiddleware;
 use Slim\{
-    App, Csrf\Guard, Http\ServerRequest, Interfaces\CallableResolverInterface, Interfaces\ErrorHandlerInterface,
-    Middleware\ErrorMiddleware, Views\Twig, Views\TwigMiddleware
+    App, Csrf\Guard, Http\ServerRequest, Interfaces\ErrorHandlerInterface, Middleware\ErrorMiddleware, Views\TwigMiddleware
 };
 
-/** @var App $app */
-/** @var Container $container */
-$app->addBodyParsingMiddleware();
+return function(App $app) {
+    /** @var Container $container */
+    $container = $app->getContainer();
 
 
 
+    $app->addBodyParsingMiddleware();
 
-//$app->add(new RoutingMiddleware($app->getRouteResolver(), $app->getRouteCollector()->getRouteParser()));
-$app->addRoutingMiddleware();
+    $app->addRoutingMiddleware();
 
-$app->add(SessionLoader::class);
+    $app->add(SessionLoader::class);
 
-/* to add into auth route
-  $app->add(SessionLogin::class); */
+    /* to add into auth route
+      $app->add(SessionLogin::class); */
 
-$app->add(PostData::class);
-$app->add(Guard::class);
+    $app->add(PostData::class);
+    $app->add(Guard::class);
 
-$app->add(BasePathMiddleware::class);
+    $app->add(BasePathMiddleware::class);
 
-$app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
-
-
-
-    /* if (User::countEntries() == 0) {
-      $user = User::create();
-      $user->name = 'admin';
-      // $user->name = 12354;
-      $user->password = $container->get('settings')->get('db.strongpasswords') ? 'Passw0rd' : 'admin';
-      $user->save();
-      } */
-
-    return $handler->handle($request);
-});
+    $app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
 
 
-/**
- * Add Error Handling Middleware
- * The constructor of `ErrorMiddleware` takes in 5 parameters
- *
- * @param CallableResolverInterface $callableResolver - CallableResolver implementation of your choice
- * @param ResponseFactoryInterface $responseFactory - ResponseFactory implementation of your choice
- * @param bool $displayErrorDetails - Should be set to false in production
- * @param bool $logErrors - Parameter is passed to the default ErrorHandler
- * @param bool $logErrorDetails - Display error details in error log
- */
-$errorMiddleware = new ErrorMiddleware(
-        $app->getCallableResolver(),
-        $app->getResponseFactory(),
-        $container->get("settings")->get('slim.displayerrordetails'),
-        $container->get("settings")->get('slim.logerrors'),
-        $container->get("settings")->get('slim.logerrordetails')
-);
-$errorMiddleware->setDefaultErrorHandler($container->get(ErrorHandlerInterface::class));
-$app->add($errorMiddleware);
+
+        /* if (User::countEntries() == 0) {
+          $user = User::create();
+          $user->name = 'admin';
+          // $user->name = 12354;
+          $user->password = $container->get('settings')->get('db.strongpasswords') ? 'Passw0rd' : 'admin';
+          $user->save();
+          } */
+
+        return $handler->handle($request);
+    });
+
+
+    /**
+     * Add Error Handling Middleware
+     * The constructor of `ErrorMiddleware` takes in 5 parameters
+     *
+     * CallableResolverInterface $callableResolver - CallableResolver implementation of your choice
+     * ResponseFactoryInterface $responseFactory - ResponseFactory implementation of your choice
+     * bool $displayErrorDetails - Should be set to false in production
+     * bool $logErrors - Parameter is passed to the default ErrorHandler
+     * bool $logErrorDetails - Display error details in error log
+     */
+    $errorMiddleware = new ErrorMiddleware(
+            $app->getCallableResolver(),
+            $app->getResponseFactory(),
+            $container->get("settings")->get('slim.displayerrordetails'),
+            $container->get("settings")->get('slim.logerrors'),
+            $container->get("settings")->get('slim.logerrordetails')
+    );
+    $errorMiddleware->setDefaultErrorHandler($container->get(ErrorHandlerInterface::class));
+    $app->add($errorMiddleware);
 
 //twig Extensions
-$app->add(function (ServerRequest $request, RequestHandlerInterface $handler) {
+    $app->add(TwigMiddleware::class);
 
-    $container = $this->get(ContainerInterface::class);
-    $app = $container->get(App::class);
-    $twig = $container->get(Twig::class);
+    $app->add(CommandMiddleware::class);
+};
 
-    if ($twig instanceof Twig) {
 
-        if (file_exists(__DIR__ . '/twig/globals.php')) $data = require __DIR__ . '/twig/globals.php';
-        else $data = [];
-        foreach ($data as $key => $value) {
-            $twig->getEnvironment()->addGlobal($key, $value);
-        }
 
-        if (file_exists(__DIR__ . '/twig/extensions.php')) {
-            $extensions = require __DIR__ . '/twig/extensions.php';
-            if (is_array($extensions)) {
-                foreach ($extensions as $classname) {
-                    $twig->addExtension($this->get($classname));
-                }
-            }
-        }
-
-        $view = new TwigMiddleware(
-                $twig,
-                $app->getRouteCollector()->getRouteParser(),
-                $app->getBasePath()
-        );
-
-        return $view->process($request, $handler);
-    }
-
-    return $handler->handle($request);
-});
-
-$app->add(CommandMiddleware::class);

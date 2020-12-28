@@ -130,20 +130,19 @@ class User extends Model {
 
         if ($this->getGroups()->count() == 0) {
             if (Group::countEntries() === 0) {
-                $admin = Group::create();
-                $admin->name = "admin";
-                $admin->save();
-                $user = Group::create();
-                $user->name = "user";
-                $user->save();
+                foreach (['admin', 'user'] as $name) {
+                    $group = Group::create();
+                    $group->name = $name;
+                    $group->save();
+                }
             }
             if (self::countEntries() === 1) {
-                $admin = Group::loadGroup('admin');
-                $this->addGroup($admin);
+                if ($group = Group::loadGroup('admin')) $this->addGroup($group);
             }
-            $user = Group::loadGroup('user');
-            $this->addGroup($user);
-            $this->save();
+            if ($group = Group::loadGroup('user')) {
+                $this->addGroup($group);
+                $this->save();
+            }
         }
     }
 
@@ -182,18 +181,18 @@ class User extends Model {
     /**
      * Checks if email already in database
      * @param string $email
-     * @return type
+     * @return bool
      */
-    private static function hasEmail(string $email) {
+    private static function hasEmail(string $email): bool {
         return self::countEntries('email = ?', [$email]) > 0;
     }
 
     /**
      * Checks if email already in database
      * @param string $name
-     * @return type
+     * @return bool
      */
-    private static function hasName(string $name) {
+    private static function hasName(string $name): bool {
         return self::countEntries('name = ?', [$name]) > 0;
     }
 

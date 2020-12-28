@@ -51,13 +51,13 @@ $settings['db'] = [
     'models' => [
         $settings['paths']['src'] . '/Models'
     ],
-    'name' => getenv('dbcname') ?? 'my_slim_app',
-    'host' => getenv('dbhost') ?? 'localhost',
-    'port' => intval(getenv('dbport') ?? 3306),
-    'dbname' => getenv('dbname') ?? 'my_slim_app',
-    'username' => getenv('dbuser') ?? 'root',
-    'password' => getenv('dbpassword') ?? 'root',
-    'charset' => getenv('dbcharset') ?? 'utf8mb4',
+    'name' => getenv('dbcname') ?: 'my_slim_app',
+    'host' => getenv('dbhost') ?: 'localhost',
+    'port' => intval(getenv('dbport') ?: 3306),
+    'dbname' => getenv('dbname') ?: 'my_slim_app',
+    'username' => getenv('dbuser') ?: 'root',
+    'password' => getenv('dbpassword') ?: 'root',
+    'charset' => getenv('dbcharset') ?: 'utf8mb4',
     'strongpasswords' => getenv('dbstrongpasswords') == 'true'
 ];
 

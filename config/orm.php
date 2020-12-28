@@ -1,10 +1,10 @@
 <?php
 
-use App\Models\User,
-    Manju\ORM,
-    Psr\Log\LoggerInterface;
+use Manju\ORM,
+    Psr\Container\ContainerInterface;
 
-ORM::setContainer($container);
-ORM::addModelPath(...$container->get('settings')->get('db.models'));
-ORM::start();
-
+return function(ContainerInterface $container) {
+    ORM::setContainer($container);
+    ORM::addModelPath(...$container->get('settings')->get('db.models'));
+    ORM::start();
+};
