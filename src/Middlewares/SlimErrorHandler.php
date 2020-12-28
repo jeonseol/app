@@ -49,13 +49,13 @@ class SlimErrorHandler extends ErrorHandler implements MiddlewareInterface {
         if (preg_match(('/html/'), $this->contentType)) {
             /** @var BaseController $controller */
             $controller = $this->container->get(BaseController::class);
+            $controller->title = "Slim Application Error";
             $templates = $this->templates;
             $template = "slimerror.twig";
 
             if ($exception instanceof HttpSpecializedException) {
 
-                //   var_dump($exception->getRequest()->getUri()->getPath());
-
+                $controller->title = $exception->getTitle();
                 $code = $exception->getCode();
                 $response = $response->withStatus($code);
                 $file = sprintf('codes/%u.twig', $code);
@@ -64,7 +64,6 @@ class SlimErrorHandler extends ErrorHandler implements MiddlewareInterface {
 
 
             $data = [
-                'title' => $this->container->get("settings")->get('app.title') . " Error",
                 'details' => $this->displayErrorDetails,
                 'message' => $exception->getMessage(),
                 'code' => $exception->getCode(),
