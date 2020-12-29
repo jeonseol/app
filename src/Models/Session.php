@@ -125,6 +125,7 @@ class Session extends BaseModel {
      */
     public static function CleanUp() {
 
+
         $now = Facade::isoDateTime();
 
         if (

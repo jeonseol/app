@@ -3,21 +3,17 @@
 declare(strict_types=1);
 
 use App\Middlewares\{
-    PostData, SessionLoader
+    SessionLoader, SessionUtils
 };
-use DI\Container,
-    NGSOFT\Commands\CommandMiddleware,
-    Psr\Http\Server\RequestHandlerInterface,
+use NGSOFT\Commands\CommandMiddleware,
     Selective\BasePath\BasePathMiddleware;
 use Slim\{
-    App, Csrf\Guard, Exception\HttpBadRequestException, Exception\HttpForbiddenException, Exception\HttpInternalServerErrorException,
-    Exception\HttpMethodNotAllowedException, Exception\HttpNotFoundException, Exception\HttpNotImplementedException,
-    Exception\HttpUnauthorizedException, Http\ServerRequest, Interfaces\ErrorHandlerInterface, Middleware\ContentLengthMiddleware,
-    Middleware\ErrorMiddleware, Views\TwigMiddleware
+    App, Csrf\Guard, Interfaces\ErrorHandlerInterface, Middleware\ContentLengthMiddleware, Middleware\ErrorMiddleware,
+    Views\TwigMiddleware
 };
 
 return function(App $app) {
-    /** @var Container $container */
+    /** @var \DI\ContainerContainer $container */
     $container = $app->getContainer();
 
 
@@ -30,7 +26,7 @@ return function(App $app) {
     $app->add(SessionLoader::class);
 
 
-    $app->add(PostData::class);
+    $app->add(SessionUtils::class);
     $app->add(Guard::class);
 
     $app->add(BasePathMiddleware::class);

@@ -1,0 +1,85 @@
+{% extends isAjaxRequest != true ? "base.twig" : "ajax.twig" %}
+{% block body %}
+<div class="card border border-secondary">
+    <div class="card-header bg-blue text-white">
+        {{ title }}
+    </div>
+    <div class="card-body">
+    {% if success %}
+        <h3 class="text-center">
+            <i class="far fa-check-circle text-success mr-2 align-middle" style="font-size: 2.5em;"></i>
+            User {{ postdata.username }} created successfully
+        </h3><hr>
+        <div class="form-group text-right mb-0">
+            <a class="btn btn-primary" href="{{ url_for("user.login") }}">
+                Sign in
+            </a>
+        </div>
+    {% elseif canRegister %}
+
+        {{ alert() }}
+        <form class="" 
+              method="POST" 
+              autocomplete="off"
+              action="{{ url_for("user.register") }}">
+
+            <div class="form-group">
+                <label for="username">User Name</label>
+                <input type="text"
+                       id="username"
+                       name="username"
+                       placeholder="Your User Name"
+                       value="{{ postdata.username }}"
+                       class="form-control">
+            </div><hr>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       placeholder="you@domain.tld"
+                       value="{{ postdata.email }}"
+                       class="form-control">
+            </div><hr>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       placeholder="Your password"
+                       value=""
+                       class="form-control">
+            </div> <hr>
+            <div class="form-group">
+                <label for="confirm">Confirm Password</label>
+                <input type="password"
+                       id="confirm"
+                       name="confirm"
+                       placeholder="Confirm your password"
+                       value=""
+                       class="form-control">
+            </div> <hr>
+            <div class="form-group text-right">
+                 {{ csrfinput() }}
+                <button type="submit" class="btn btn-primary">
+                    Create
+                </button>
+
+            </div>
+        </form>   
+    {% else %}
+        <h3 class="text-center">
+            <i class="far fa-times-circle text-danger mr-2 align-middle" style="font-size: 2.5em;"></i>
+            Registrations are closed
+        </h3>
+        <hr>
+        <div class="form-group text-right mb-0">
+            <a class="btn btn-primary" href="{{ url_for("user.login") }}">
+                Sign in
+            </a>
+        </div>
+    {% endif %}
+  
+    </div>
+</div>
+{% endblock %}

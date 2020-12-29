@@ -83,11 +83,11 @@ class Group extends BaseModel {
 
     /**
      * Find Group by name
-     * @param string $name
+     * @param string $label
      * @return Group|null
      */
-    public static function loadGroup(string $name): ?Group {
-        return self::findOne('name = ?', [$name]);
+    public static function loadGroup(string $label): ?Group {
+        return self::findOne('label = ?', [$label]);
     }
 
 }

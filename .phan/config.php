@@ -74,5 +74,6 @@ return [
         'PhanTypeMismatchPropertyProbablyReal',
         'PhanAccessReadOnlyMagicProperty',
         'PhanAccessWriteOnlyMagicProperty',
+        'PhanStaticCallToNonStatic',
     ]
 ];

@@ -10,10 +10,9 @@ use Psr\{
     Http\Server\RequestHandlerInterface, Log\LoggerInterface
 };
 use Slim\{
-    App, Exception\HttpBadRequestException, Exception\HttpException, Exception\HttpForbiddenException,
-    Exception\HttpInternalServerErrorException, Exception\HttpMethodNotAllowedException, Exception\HttpNotFoundException,
-    Exception\HttpNotImplementedException, Exception\HttpSpecializedException, Exception\HttpUnauthorizedException,
-    Handlers\ErrorHandler
+    App, Exception\HttpBadRequestException, Exception\HttpForbiddenException, Exception\HttpInternalServerErrorException,
+    Exception\HttpMethodNotAllowedException, Exception\HttpNotFoundException, Exception\HttpNotImplementedException,
+    Exception\HttpSpecializedException, Exception\HttpUnauthorizedException, Handlers\ErrorHandler
 };
 
 class SlimErrorHandler extends ErrorHandler implements MiddlewareInterface {

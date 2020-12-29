@@ -9,6 +9,11 @@ $settings['app'] = [
     'tz' => 'Europe/Paris',
 ];
 
+$settings['users'] = [
+    'can_register' => true,
+    'max_user_count' => 1
+];
+
 
 ini_set('display_errors', '1');
 

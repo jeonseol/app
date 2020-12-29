@@ -11,7 +11,7 @@ use Psr\{
 };
 use Slim\Http\ServerRequest;
 
-class PostData implements MiddlewareInterface {
+class SessionUtils implements MiddlewareInterface {
 
     /** @var stdObject */
     private $globals;

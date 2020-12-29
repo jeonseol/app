@@ -5,7 +5,6 @@ namespace App\Middlewares;
 use App\Models\{
     Session, User
 };
-use NGSOFT\Tools\Objects\SessionStorage;
 use Psr\Http\{
     Message\ResponseInterface, Message\ServerRequestInterface, Server\RequestHandlerInterface
 };

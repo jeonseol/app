@@ -4,7 +4,7 @@ use App\{
     Controllers\BaseController, Controllers\Users, Middlewares\SessionLogin
 };
 use Slim\{
-    App, Http\Response, Http\ServerRequest as Request, Routing\RouteCollectorProxy
+    App, Http\Response, Routing\RouteCollectorProxy
 };
 
 return function(App $app) {
@@ -40,6 +40,3 @@ return function(App $app) {
                 ->setName("user.register");
     });
 };
-
-
-
