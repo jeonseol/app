@@ -15,6 +15,7 @@ use Manju\Helpers\Collection;
  * @property-write string $password
  * @property-read bool $admin
  * @property Collection $groups
+ * @property Collection $sessions
  */
 class User extends BaseModel {
 
@@ -105,6 +106,14 @@ class User extends BaseModel {
     ////////////////////////////   Relations   ////////////////////////////
 
     /**
+     * Get List of Sessions
+     * @return Collection
+     */
+    public function getSessions(): Collection {
+        return $this->getOwnedList(Session::class);
+    }
+
+    /**
      * Get List of groups
      * @return Collection
      */
@@ -192,14 +201,11 @@ class User extends BaseModel {
     ////////////////////////////   Events   ////////////////////////////
 
     public function after_update() {
-
-
-
         if ($this->getGroups()->count() == 0) {
             if (Group::countEntries() === 0) {
                 foreach (['admin', 'user'] as $label) {
                     $group = Group::create();
-                    $group->name = $label;
+                    $group->label = $label;
                     $group->save(true);
                 }
             }

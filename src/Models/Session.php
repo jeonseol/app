@@ -125,19 +125,10 @@ class Session extends BaseModel {
      */
     public static function CleanUp() {
 
-
         $now = Facade::isoDateTime();
-
-        if (
-                $expiredSessions = self::find(
-                        'expire < ?',
-                        [$now]
-                )
-        ) {
-            foreach ($expiredSessions as $session) {
-                $session->trash();
-            }
-        }
+        $type = self::getType();
+        $query = sprintf('DELETE FROM `%s` WHERE expire < ?', $type);
+        Facade::exec($query, [$now]);
     }
 
 }

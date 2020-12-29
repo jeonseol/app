@@ -47,7 +47,7 @@ class Users extends BaseController {
                         } elseif (User::hasEmail($values['email'])) {
                             $valid = false;
                             $this->setAlertMessage("Email already exists.");
-                        } elseif (User::hasName($value['username'])) {
+                        } elseif (User::hasName($values['username'])) {
                             $valid = false;
                             $this->setAlertMessage("Username already exists.");
                         }
@@ -71,8 +71,14 @@ class Users extends BaseController {
                 $user->name = $params["username"];
                 $user->password = $params["password"];
                 $user->email = $params["email"];
-                $user->save(true);
-                $this->success = true;
+                try {
+                    $user->save(true);
+                    $this->success = true;
+                } catch (ValidationError $error) {
+                    $error->getCode();
+                    $this->setAlertMessage('Sorry, an error has occured.');
+                    return $this->redirectToRoute('user.register');
+                }
             }
 
             return $this->render('user/register');

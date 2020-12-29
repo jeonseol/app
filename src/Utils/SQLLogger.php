@@ -28,7 +28,8 @@ class SQLLogger implements Logger {
 
         $record = [
             'CREATE', 'ALTER', 'DROP',
-            'SELECT', 'INSERT', 'UPDATE', 'DELETE'
+            //'SELECT', 'INSERT', 'UPDATE',
+            'DELETE'
         ];
 
         if (preg_match(sprintf('/^(%s)/i', implode('|', $record)), $query) > 0) {
