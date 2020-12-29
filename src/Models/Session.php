@@ -124,11 +124,11 @@ class Session extends BaseModel {
      * Removes Expired Sessions from Database
      */
     public static function CleanUp() {
-
-        $now = Facade::isoDateTime();
-        $type = self::getType();
-        $query = sprintf('DELETE FROM `%s` WHERE expire < ?', $type);
-        Facade::exec($query, [$now]);
+        if ($type = self::getType()) {
+            $now = Facade::isoDateTime();
+            $query = sprintf('DELETE FROM `%s` WHERE expire < ?', $type);
+            Facade::exec($query, [$now]);
+        }
     }
 
 }

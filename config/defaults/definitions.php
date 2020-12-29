@@ -1,7 +1,6 @@
 <?php
 
-use Adbar\Dot,
-    App\Middlewares\SlimErrorHandler,
+use App\Middlewares\SlimErrorHandler,
     DI\Bridge\Slim\ControllerInvoker;
 use Invoker\{
     Invoker, ParameterResolver\AssociativeArrayResolver, ParameterResolver\Container\TypeHintContainerResolver,
@@ -32,7 +31,7 @@ return [
     //site settings
     "settings" => function() {
         $settings = require dirname(__DIR__) . '/settings.php';
-        return new Dot($settings);
+        return stdObject::from($settings)->disableDotArrayConvertion();
     },
     //globals set on all Controllers extending BaseController
     "globals" => function(ContainerInterface $container) {
