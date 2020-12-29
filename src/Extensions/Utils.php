@@ -23,6 +23,18 @@ class Utils extends AbstractExtension {
     }
 
     /**
+     * Get a global
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getGlobalValue(string $key, $default = null) {
+        $value = $this->globals[$key];
+        if ($value === null) $value = $default;
+        return $value;
+    }
+
+    /**
      * Renders an Alert Message
      * @param string|null $message
      * @return string
@@ -60,7 +72,7 @@ class Utils extends AbstractExtension {
         return [
             new TwigFunction('flash', [$this, 'renderFlashMessage'], $params),
             new TwigFunction('alert', [$this, 'renderAlertMessage'], $params),
-            new TwigFunction('success', [$this, 'renderSuccessMessage'], $params)
+            new TwigFunction('success', [$this, 'renderSuccessMessage'], $params),
         ];
     }
 

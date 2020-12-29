@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Models\User,
-    JsonException;
+use App\Models\{
+    Group, User
+};
+use JsonException;
 use NGSOFT\Tools\Objects\{
     SessionStorage, stdObject
 };
@@ -17,7 +19,7 @@ use Slim\{
     App, Factory\ServerRequestCreatorFactory, Views\Twig
 };
 
-class BaseController {
+class BaseController implements \ArrayAccess, \Countable {
 
     /**
      * @inject
@@ -37,8 +39,14 @@ class BaseController {
      */
     protected $responseFactory;
 
-    /** @var stdObject */
+    /**  @var stdObject */
     protected $storage;
+
+    /**
+     * @inject ("user")
+     * @var User|null
+     */
+    protected $user;
 
     ////////////////////////////   DATA   ////////////////////////////
 
@@ -49,7 +57,9 @@ class BaseController {
 
     /** @return stdObject */
     protected function getStorage(): stdObject {
-        if (!($this->storage instanceof stdObject)) $this->storage = stdObject::from($this->getGlobals());
+        if (!($this->storage instanceof stdObject)) {
+            $this->storage = stdObject::from($this->getGlobals());
+        }
         return $this->storage;
     }
 
@@ -81,15 +91,10 @@ class BaseController {
             array $data = [],
             ?ResponseInterface $response = null
     ): ResponseInterface {
-
         $response = $response ?: $this->createResponse();
-
-        if (
-                $this->requirelogin == true and
-                $this->isLoggedIn() == false
-        ) return $this->redirectToLogin();
-
-        $data = array_replace($this->getStorage()->toArray(), $data);
+        if (!preg_match('/\.twig$/', $page)) $page .= '.twig';
+        $storage = $this->getStorage()->toArray();
+        $data = array_replace([], $storage, $data);
         return $this->get(Twig::class)->render($response, $page, $data);
     }
 
@@ -159,14 +164,6 @@ class BaseController {
         return $this->redirectToRoute("user.login");
     }
 
-    /**
-     * Checks if logged in
-     * @return bool
-     */
-    protected function isLoggedIn(): bool {
-        return $this->user instanceof User;
-    }
-
     ////////////////////////////   Container   ////////////////////////////
 
     /**
@@ -209,7 +206,57 @@ class BaseController {
         $this->getStorage()->__unset($prop);
     }
 
+    /** {@inheritdoc} */
+    public function offsetExists($offset) {
+        return $this->getStorage()->offsetExists($offset);
+    }
+
+    /** {@inheritdoc} */
+    public function offsetGet($offset) {
+        if (!is_string($offset)) return null;
+        return $this->getStorage()->offsetGet($offset);
+    }
+
+    /** {@inheritdoc} */
+    public function offsetSet($offset, $value) {
+        if (!is_string($offset)) return;
+        $this->getStorage()->offsetSet($offset, $value);
+    }
+
+    /** {@inheritdoc} */
+    public function offsetUnset($offset) {
+
+        $this->getStorage()->offsetUnset($offset);
+    }
+
+    /** {@inheritdoc} */
+    public function count() {
+        return $this->getStorage()->count();
+    }
+
     ////////////////////////////   Utils   ////////////////////////////
+
+    /**
+     * Current User Can access Page
+     * @param Group $groups
+     * @return bool
+     */
+    protected function userCanAccessContent(Group ... $groups): bool {
+        if ($this->user instanceof User) {
+            foreach ($groups as $group) {
+                if ($this->user->hasGroup($group)) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if logged in
+     * @return bool
+     */
+    protected function isLoggedIn(): bool {
+        return $this->user instanceof User;
+    }
 
     /**
      * Creates a Flash Message

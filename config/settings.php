@@ -11,7 +11,7 @@ $settings['app'] = [
 
 $settings['users'] = [
     'can_register' => true,
-    'max_user_count' => 1
+    'max_user_count' => 2
 ];
 
 

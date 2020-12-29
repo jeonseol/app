@@ -40,6 +40,10 @@ return [
         if (!is_array($globals)) $globals = [];
         return stdObject::from($globals);
     },
+    "user" => function (ContainerInterface $container) {
+        $globals = $container->get('globals');
+        return $globals['user'];
+    },
     //twig extensions
     "extensions" => function(ContainerInterface $container) {
         $extensions = (require dirname(__DIR__) . '/extensions.php')($container);

@@ -5,16 +5,79 @@ namespace App\Controllers;
 use App\Models\{
     Session, User
 };
-use NGSOFT\Tools\Objects\SessionStorage,
-    Psr\Http\Message\ResponseInterface;
-use Slim\Http\{
-    Response, ServerRequest
-};
+use Manju\Exceptions\ValidationError,
+    NGSOFT\Tools\Objects\SessionStorage,
+    Psr\Http\Message\ResponseInterface,
+    Slim\Http\ServerRequest;
 
 class Users extends BaseController {
 
-    public function register(ServerRequest $request, Response $response): ResponseInterface {
-        return $response;
+    public function register(ServerRequest $request): ResponseInterface {
+        if ($this->isLoggedIn()) return $this->redirectToRoute("home");
+
+        $this->title = 'Create a new User';
+
+        /** @var SessionStorage $session */
+        $session = $this->get(SessionStorage::class);
+
+        if ($this->canRegister === true) {
+            if ($request->getMethod() === "POST") {
+                if ($request->getAttribute("csrf_status", true)) {
+                    //validation
+                    $valid = true;
+                    $params = ["username", "email", "password", "confirm"];
+                    $values = [];
+                    foreach ($params as $param) {
+                        $value = $values[$param] = $request->getParam($param);
+                        if (empty($value)) {
+                            $this->setAlertMessage('Not all fields are filled.');
+                            $valid = false;
+                        }
+                    }
+                    if ($valid === true) {
+                        if ($values['password'] !== $values ['confirm']) {
+                            $valid = false;
+                            $this->setAlertMessage("Password not confirmed correctly");
+                        } elseif (!User::checkPasswordValid($values['password'])) {
+                            $valid = false;
+                            $this->setAlertMessage("Invalid Password Supplied");
+                        } elseif (!User::checkEmailValid($values['email'])) {
+                            $valid = false;
+                            $this->setAlertMessage("Invalid Email Supplied");
+                        } elseif (User::hasEmail($values['email'])) {
+                            $valid = false;
+                            $this->setAlertMessage("Email already exists.");
+                        } elseif (User::hasName($value['username'])) {
+                            $valid = false;
+                            $this->setAlertMessage("Username already exists.");
+                        }
+                    }
+
+                    $session->setItem('validUser', $valid);
+                }
+                return $this->redirectToRoute('user.register');
+            }
+
+            if (
+                    isset($this->postdata)
+                    and $session->getItem('validUser') === true
+            ) {
+
+                $session->removeItem('validUser');
+
+                $params = $this->postdata;
+                //User Creation
+                $user = User::create();
+                $user->name = $params["username"];
+                $user->password = $params["password"];
+                $user->email = $params["email"];
+                $user->save(true);
+                $this->success = true;
+            }
+
+            return $this->render('user/register');
+        }
+        return $this->createResponse(403);
     }
 
     public function login(ServerRequest $request): ResponseInterface {
@@ -26,7 +89,7 @@ class Users extends BaseController {
             if ($request->getAttribute("csrf_status", true)) $this->setAlertMessage('Invalid Credentials.');
             return $this->redirectToLogin();
         }
-        return $this->render('user/login.twig',);
+        return $this->render('user/login');
     }
 
     public function logout(): ResponseInterface {

@@ -82,8 +82,9 @@ class User extends BaseModel {
      */
     public function setEmail(string $email): User {
         $this->email = null;
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return $this;
-        $this->email = filter_var($email, FILTER_SANITIZE_EMAIL);
+        if (self::checkEmailValid($email)) {
+            $this->email = filter_var($email, FILTER_SANITIZE_EMAIL);
+        }
         return $this;
     }
 
@@ -95,20 +96,9 @@ class User extends BaseModel {
      */
     public function setPassword(string $password): User {
         $this->password = null;
-        static $strong;
-
-        if (!is_bool($strong)) {
-            $cfg = self::getSettings();
-            $strong = $cfg['db.strongpasswords'] === true;
-        }
-
-        if (
-                ($strong === true)
-                and preg_match(self::PASSWORD_CHECK, $password) > 0
-        ) {
+        if (self::checkPasswordValid($password)) {
             $this->password = $this->encodePassword($password);
-        } elseif (!$strong) $this->password = $this->encodePassword($password);
-
+        }
         return $this;
     }
 
@@ -144,6 +134,42 @@ class User extends BaseModel {
     ////////////////////////////   Utils   ////////////////////////////
 
     /**
+     * Checks Email Validity
+     * @param string $email
+     * @return bool
+     */
+    public static function checkEmailValid(string $email): bool {
+        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
+    /**
+     * Checks if password is valid
+     * @staticvar type $strong
+     * @param string $password
+     * @return bool
+     */
+    public static function checkPasswordValid(string $password): bool {
+        static $strong;
+        if (!is_bool($strong)) {
+            $cfg = self::getSettings();
+            $strong = $cfg['db.strongpasswords'] === true;
+        }
+
+        if (
+                ($strong === true)
+                and preg_match(self::PASSWORD_CHECK, $password) > 0
+        ) {
+            return true;
+        } elseif (
+                ($strong === false)
+                and!empty($password)
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Checks if password matches the current user password
      * @param string $password
      * @return bool
@@ -167,12 +193,14 @@ class User extends BaseModel {
 
     public function after_update() {
 
+
+
         if ($this->getGroups()->count() == 0) {
             if (Group::countEntries() === 0) {
-                foreach (['admin', 'user'] as $name) {
+                foreach (['admin', 'user'] as $label) {
                     $group = Group::create();
-                    $group->name = $name;
-                    $group->save();
+                    $group->name = $label;
+                    $group->save(true);
                 }
             }
             if (self::countEntries() === 1) {
@@ -223,7 +251,6 @@ class User extends BaseModel {
      * @return bool
      */
     public static function hasEmail(string $email): bool {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
         return self::countEntries('email = ?', [$email]) > 0;
     }
 

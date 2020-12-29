@@ -41,10 +41,32 @@ class Group extends BaseModel {
     /**
      * Set Group name
      * @param string $name
-     * @return $this
+     * @return Group
      */
-    public function setName(string $name) {
+    public function setName(string $name): Group {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * Get Group Label
+     * @return string
+     */
+    public function getLabel(): string {
+        return $this->label;
+    }
+
+    /**
+     * Set Group label
+     * @param string $label
+     * @return Group
+     */
+    public function setLabel(string $label): Group {
+        if (!empty($label)) {
+            if (empty($this->name)) $this->name = $label;
+            $this->label = $label;
+        }
+
         return $this;
     }
 
