@@ -8,8 +8,69 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="navbar-collapse bg-blue collapse main-menu">
+            
+            <ul class="navbar-nav mr-auto ml-4">
+
+
+           
+            </ul>
+            <form 
+                id="searchbar"
+                class="form-inline my-2 my-md-0 col-md-4" 
+                autocomplete="off" 
+                method="get" 
+                action="#" style="min-width: 300px;">
+                 <input 
+                     class="form-control bg-blue border-light text-light typeahead livesearch" 
+                     style="width: 100%"
+                     name="q" 
+                     placeholder="Search" 
+                     type="search">
+                 <input type="submit" hidden>
+            </form>
+            <ul class="navbar-nav">
+
+                <li class="nav-item dropdown mr-3 ml-4">
+                    
+                    <a class="nav-link dropdown-toggle text-white text-center" href="#" data-toggle="dropdown">
+                        <i class="fas fa-user mr-2"></i>
+                        <span class="d-md-none">{% if user %}{{ user.name }}{% else %}Guest{% endif %}</span>
+                    </a>
+                    <div class="dropdown-menu pull-right mt-2 text-center">
+                        {% if user %}
+                        <a class="dropdown-item pl-2" href="{{ url_for("user.profile") }}">
+                            <i class="fas fa-id-card float-left mt-1"></i>Profile   
+                        </a>
+                        {% if user.admin %}
+                        <a class="dropdown-item pl-2" href="{{ url_for("user.admin") }}">
+                            <i class="fas fa-users-cog float-left mt-1"></i>Manage
+                        </a>
+                        {% endif %}
+                        <a class="dropdown-item pl-2" href="{{ url_for("user.logout") }}">
+                            <i class="fas fa-user-times float-left mt-1"></i>Logout
+                        </a>
+                        {% else %}
+                        <a class="dropdown-item pl-2" href="{{ url_for("user.login") }}">
+                            <i class="fas fa-user-shield float-left mt-1"></i>Login
+                        </a>
+                        {% if canRegister %}
+                            <hr class="dropdown-divider" />
+                            <a class="dropdown-item pl-2" href="{{ url_for("user.register") }}">
+                                <i class="fas fa-user-plus float-left mt-1"></i>Register
+                            </a>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+    
+                </li>
+            </ul>
+            
          
         </div>
+        
+            
+        
+        
     </nav>
 </header>
 <div class="separator"></div>

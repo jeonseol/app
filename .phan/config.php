@@ -21,8 +21,6 @@ return [
     'directory_list' => [
         'config',
         'src',
-        'resources/tools/src',
-        'resources/tools/vendor/psr',
         'vendor'
     // 'vendor/psr',
     //'vendor/illuminate',

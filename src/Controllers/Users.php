@@ -110,4 +110,25 @@ class Users extends BaseController {
         return $this->createResponse(403);
     }
 
+    public function profile(): ResponseInterface {
+        if (
+                !$this->isLoggedIn()
+        ) {
+            return $this->redirectToLogin();
+        }
+        $this->title = $this->user->name . " Profile";
+        return $this->createResponse(404);
+    }
+
+    public function admin(): ResponseInterface {
+        if (
+                !$this->isLoggedIn()
+                or!$this->user->admin
+        ) {
+            return $this->createResponse(403);
+        }
+        $this->title = "Users and Groups";
+        return $this->createResponse(404);
+    }
+
 }

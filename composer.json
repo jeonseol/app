@@ -37,7 +37,8 @@
         "monolog/monolog": "^2",
 
         "ngsoft/manju": "^3",
-        "ngsoft/stdio": "^2"
+        "ngsoft/stdio": "^2",
+        "ngsoft/tools": "^2"
 
 
 

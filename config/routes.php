@@ -27,16 +27,24 @@ return function(App $app) {
     $app->group('/user/', function (RouteCollectorProxy $group) {
 
         $group
+                ->map(['GET', 'POST'], 'register', [Users::class, 'register'])
+                ->setName("user.register");
+
+        $group
                 ->map(['GET', 'POST'], 'login', [Users::class, 'login'])
                 ->setName("user.login")
                 ->add(SessionLogin::class);
 
         $group
-                ->get("logout", [Users::class, 'logout'])
-                ->setName("user.logout");
+                ->map(['GET', 'POST'], 'profile', [Users::class, 'profile'])
+                ->setName("user.profile");
 
         $group
-                ->map(['GET', 'POST'], 'register', [Users::class, 'register'])
-                ->setName("user.register");
+                ->map(['GET', 'POST'], 'admin', [Users::class, 'admin'])
+                ->setName("user.admin");
+
+        $group
+                ->get("logout", [Users::class, 'logout'])
+                ->setName("user.logout");
     });
 };

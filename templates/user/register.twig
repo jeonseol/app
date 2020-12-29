@@ -30,7 +30,7 @@
                        name="username"
                        placeholder="Your User Name"
                        value="{{ postdata.username }}"
-                       class="form-control">
+                       class="form-control" required>
             </div><hr>
             <div class="form-group">
                 <label for="email">Email</label>
@@ -39,7 +39,7 @@
                        name="email"
                        placeholder="you@domain.tld"
                        value="{{ postdata.email }}"
-                       class="form-control">
+                       class="form-control" required>
             </div><hr>
             <div class="form-group">
                 <label for="password">Password</label>
@@ -48,7 +48,7 @@
                        name="password"
                        placeholder="Your password"
                        value=""
-                       class="form-control">
+                       class="form-control" required>
             </div> <hr>
             <div class="form-group">
                 <label for="confirm">Confirm Password</label>
@@ -57,7 +57,7 @@
                        name="confirm"
                        placeholder="Confirm your password"
                        value=""
-                       class="form-control">
+                       class="form-control" required>
             </div> <hr>
             <div class="form-group text-right">
                  {{ csrfinput() }}
