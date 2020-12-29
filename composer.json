@@ -32,7 +32,6 @@
         "php-di/slim-bridge": "^3.1",
         "doctrine/annotations": "^1.11",
         "vlucas/phpdotenv": "^5.2",
-        "adbario/php-dot-notation": "^2.2",
 
         "monolog/monolog": "^2",
 

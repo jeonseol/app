@@ -7,12 +7,11 @@ $settings = require __DIR__ . '/defaults/settings.php';
 $settings['app'] = [
     'title' => "My Slim App",
     'tz' => 'Europe/Paris',
+    'can_register' => true,
+    'max_user_count' => 2,
 ];
 
-$settings['users'] = [
-    'can_register' => true,
-    'max_user_count' => 2
-];
+
 
 
 ini_set('display_errors', '1');

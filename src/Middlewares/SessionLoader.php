@@ -44,8 +44,8 @@ class SessionLoader implements MiddlewareInterface {
 
         if ($this->globals['canRegister'] === null) {
             $settings = $this->container->get('settings');
-            $canRegister = $settings['users.can_register'] ?? true;
-            $maxCount = $settings['users.max_user_count'] ?? 0;
+            $canRegister = $settings['app.can_register'] ?? true;
+            $maxCount = $settings['app.max_user_count'] ?? 0;
             if (
                     ($maxCount > 0)
                     and (User::countEntries() >= $maxCount)
