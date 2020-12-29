@@ -18,7 +18,7 @@
     "prefer-stable": true,
     "require-dev": {},
     "require": {
-        "php": ">=7.4",
+        "php": "^7.4",
 
         "slim/slim": "^4.7",
         "slim/twig-view": "^3",
